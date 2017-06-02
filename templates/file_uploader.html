@@ -1,0 +1,34 @@
+{% extends "__init__.html" %}
+{% block content %}
+<div id="tool-content">
+	<div>Upload file here</div>
+	<div>
+		<form action="" method="post" enctype="multipart/form-data" id="file-uploader">
+			<input type="file" name="timeseries_data"/>
+			<input type="submit" value="Upload File"/>
+			<div id="option-div">
+				<div>Option</div>
+				<input type="radio" name="period_info" value="at_once" checked>No period, whole data at once <br/>
+				<input type="radio" name="period_info" value="available">Period: <input type="textarea" name="period_info_value" value="4">
+			</div>
+		</form>
+		<div>
+<!-- 			<div>Selective Period</div>
+				<div>Period 1 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP1" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP1" style='width: 40px;'></div>
+				<div>Period 2 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP2" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP2" style='width: 40px;'></div>
+				<div>Period 3 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP3" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP3" style='width: 40px;'></div>
+				<div>Period 4 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP4" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP4" style='width: 40px;'></div>
+ -->								
+ 			<div>Start Time Point :&nbsp; &nbsp; <input type="textarea" name="Start_TP" value="1" style='width: 40px;'></div>
+
+			<br/>
+			<div>Tools&nbsp;
+			<select name="tool-name" form="file-uploader">
+				<option value="tsv2cy">TSV2Cy</option>
+				<option value="genie3">GENIE3</option>
+			</select>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

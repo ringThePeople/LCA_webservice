@@ -1,0 +1,38 @@
+﻿@charset "utf-8";
+
+.page {
+	padding: 20px;
+}
+
+#tool-title {
+	font-size: 40pt;
+	font-family: sans-serif;
+	margin-bottom: 20px;
+}
+
+#tool-content {
+	border: solid 1px #999;
+	border-radius: 8px;
+	padding: 10px;
+}
+
+#option-div {
+	border: solid 1px #BBB;
+	border-radius:3px;
+	padding: 8px;
+	margin: 8px 0;
+}
+
+
+a {
+	color: #000;
+}
+
+a:hover {
+	opacity: 0.4;
+}
+
+a:link, a:visited {
+	color: #000;
+	text-decoration: none;
+}

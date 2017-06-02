@@ -1,0 +1,201 @@
+{% extends "__init__.html" %}
+{% block content %}
+	
+	<script type='text/javascript' src="{{ url_for('static', filename='cytoscape.min.js') }}"></script>
+	<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='cy.css') }}">
+<div style="background-color: #A0A0A0; width: : 3450px;"><H1>Layout</H1></div>
+<div style="overflow:auto; width:870px;height: 750px;float: left;">
+<div style="width: 900%;">
+<!-- Period 1 -->
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px;border:1px ;'>
+		{% if graphdata %}
+			<H2>Period 1</H2>
+			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
+			<div id="cy" class="cy-div">
+			</div>
+
+
+		{% else %}
+		Cytoscape will be placed here.
+		Please upload file
+		{% endif %}
+		
+	</div>
+	
+	
+	<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
+	</div>
+
+<!-- Period 2 -->
+	{% if graphdata2 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 2</H2>
+			<div id="graph-info2" class="graph-info-div">{{ graphdata2 }}</div>
+			<div id="cy2" class="cy-div">
+			</div>
+		
+		
+	</div>
+
+	<a id="jpg-eg2" download="period2.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 3 -->
+	{% if graphdata3 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 3</H2>
+			<div id="graph-info3" class="graph-info-div">{{ graphdata3 }}</div>
+			<div id="cy3" class="cy-div">
+			</div>
+		
+		
+	</div>
+
+	<a id="jpg-eg3" download="period3.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 4 -->
+	{% if graphdata4 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 4</H2>
+			<div id="graph-info4" class="graph-info-div">{{ graphdata4 }}</div>
+			<div id="cy4" class="cy-div">
+			</div>
+		
+		
+	</div>
+
+	<a id="jpg4-eg" download="period4.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 5 -->
+	{% if graphdata5 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 5</H2>
+			<div id="graph-info5" class="graph-info-div">{{ graphdata5 }}</div>
+			<div id="cy5" class="cy-div">
+			</div>
+		
+		
+	</div>
+
+	<a id="jpg-eg5" download="period5.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 6 -->
+	{% if graphdata6 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 6</H2>
+			<div id="graph-info6" class="graph-info-div">{{ graphdata6 }}</div>
+			<div id="cy6" class="cy-div">
+			</div>
+		
+		
+	</div>
+
+	<a id="jpg-eg6" download="period6.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 7 -->
+	{% if graphdata7 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 7</H2>
+			<div id="graph-info7" class="graph-info-div">{{ graphdata7 }}</div>
+			<div id="cy7" class="cy-div">
+			</div>
+		
+		
+	</div>
+
+	<a id="jpg-eg7" download="period7.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 8 -->
+	{% if graphdata8 %}
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+		
+			<H2>Period 8</H2>
+			<div id="graph-info8" class="graph-info-div">{{ graphdata8 }}</div>
+			<div id="cy8" class="cy-div">
+			</div>
+	
+		
+	</div>
+
+	<a id="jpg-eg8" download="period8.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+<!-- Period 9 -->
+	{% if graphdata9 %}	
+	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px'>
+	
+			<H2>Period 9</H2>
+			<div id="graph-info9" class="graph-info-div">{{ graphdata9 }}</div>
+			<div id="cy9" class="cy-div">
+			</div>
+	
+		
+	</div>
+
+	<a id="jpg-eg9" download="period9.jpg"><H3>Download as JPG</H3></a>
+	
+	</div>
+	{% endif %}
+	
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test.js') }}" ></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test2.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test3.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test4.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test5.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test6.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test7.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test8.js') }}"></script>
+	<script type='text/javascript' src="{{ url_for('static', filename='cy_test9.js') }}"></script>
+
+
+</div>
+</div>
+
+<!-- side bar -->
+<div style='display: inline;float: left;width: 400px; height:680px;border:4px solid gray;'>
+	<div style='display: inline;float: left;width: 250px; border:1px'>
+	<div id="cy-barP" class = "cy-bar-div"></div>	
+	<div id="cy-barS" class = "cy-bar-div"></div>
+	<div id="cy-barT" class = "cy-bar-div"></div>
+	<div id="cy-barI" class = "cy-bar-div"></div>
+	<div id="cy-barD" class = "cy-bar-div"></div></div>
+
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
