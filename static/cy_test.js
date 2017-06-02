@@ -5,6 +5,8 @@ $(function(){
         container: document.getElementById('cy'),
         wheelSensitivity: 0.1,
 boxSelectionEnabled: false,
+        avoidOverlap: true,
+        avoidOverlapPadding: 10,
 // autounselectify: true,
 selectable: true,
         elements: [
@@ -26,17 +28,15 @@ selectable: true,
                 selector: 'node',
                 style: {
                     'content': 'data(id)',
-                    // 'text-opacity': 0.5,
+                    
                     'text-valign': 'center',
                     // 'text-halign': 'left',
-                    //'background-color': '#ffffe7',
-                    // 'background-color': 'back(col)'
                     'background-opacity': 0.5,
                     'width' : 75,
                     'height' : 75,
                     'border-width': 1,
                     'border-color': 'black'
-                    
+
                 }
             },
 
@@ -76,8 +76,8 @@ for(var i=0;i<cy.$('node').length; i++){
     cy.$('node')[i].css("background-color", cy.$('node')[i].data('col'));
     // cy.$('node')[i].css("x", cy.$('node')[i].data('x'));
     // cy.$('node')[i].css("y", cy.$('node')[i].data('y'));
-    cy.$('node')[i].renderedPosition("x", (cy.$('node')[i].data('x')*40));
-    cy.$('node')[i].renderedPosition("y", (cy.$('node')[i].data('y')*15));
+    cy.$('node')[i].renderedPosition("x", (cy.$('node')[i].data('x')*40 + 30));
+    cy.$('node')[i].renderedPosition("y", (cy.$('node')[i].data('y')*20 - 50));
 
 }
 var jpg64 = cy.jpg();
