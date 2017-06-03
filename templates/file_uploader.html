@@ -1,6 +1,9 @@
 {% extends "__init__.html" %}
 {% block content %}
 <!--  -->
+<div style="padding-top: : 20px; text-align: center;">
+<img src="/static/logo.png" height="180">
+</div>
 <script language="javascript">
 var oTbl;
 //add Row 
@@ -78,13 +81,27 @@ function frmCheck()
     oTbl = document.getElementById("use_for_selective");
 	oTbl.value = ret_Tag;
  }
+
+ function showExample(){
+  var p_i = document.getElementById("use_for_selective");
+  p_i.value = 'example'
+  oTbl = document.getElementById("waiting");
+  oTbl.innerHTML = "<h1>Calculating Example...</br>Please wait</h1>";
+ }
 </script>
 <!--  -->
 
-<div id="tool-content">
-	<div>Upload file here</div>
+
+<!-- main wrap-->
+<!-- #tool-content -->
+<div style="width: 75%; padding-left: 12%;padding-right: 12%;">
+<div style="border: solid 1px #999;border-radius: 8px;padding: 10px;">
+	<!-- left Side -->
+<form action="" method="post" enctype="multipart/form-data" id="file-uploader">
+
+  <div style='display: inline-block;width:49%;border:1px;'>  
+  <div>Upload file here</div>
 	<div>
-		<form action="" method="post" enctype="multipart/form-data" id="file-uploader">
 			<input type="file" name="timeseries_data"/>
 			<!-- input type="submit" value="Upload File"--> 
 			<button onClick="frmCheck()">Upload File</button>
@@ -113,18 +130,15 @@ function frmCheck()
               <td align="left"></td>
             </tr> -->
 
-          </table>
-        </tr>
+    </table>
+      </tr>
        </table>
        </div>
 <!--  -->
 				
 			</div>
-		</form>
+
 		<div>								
- 			
-
-
 			<br/>
 			<div>Tools&nbsp;
 			<select name="tool-name" form="file-uploader">
@@ -134,5 +148,22 @@ function frmCheck()
 			</div>
 		</div>
 	</div>
+  </div>
+  <!-- left side end -->
+
+  <!-- right side -->
+  <div style='display: inline-block;float: right;width:49%;border:1px;'> 
+  <span style="font-style: italic; text-decoration: underline;">Example</span></br></br>
+  <a href="/static/test.html">lca_framework_test.tsv</a></br>
+ 
+
+  <button onClick="showExample()">Submit</button>
+  <div id="waiting"></div>
+  </div>
+
+  
+  <!-- right side end -->
+</form>
+</div>
 </div>
 {% endblock %}

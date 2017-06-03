@@ -18,10 +18,19 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
 	if request.method == 'POST':
+		if(request.form['selective_form'] == 'example'):
+			fortest = open("lca_framework_test.tsv","r")
+			session['uploaded'] = fortest.read()
+			fortest.close()
+			session['period'] = {'type': 'at_once', 'value': 4}
+			session['tool'] = 'genie3'
+			resp = make_response(redirect(url_for('display_result'), code=307))
+			return resp
+
 		file = request.files['timeseries_data']
 		try:
-			print "request.form_start", str(request.form['selective_form'])
-			
+			# print "request.form_start", str(request.form['selective_form'])
+			#when selective periods chosen
 			period = {'type': request.form['period_info'], 'value': request.form['period_info_value'], 'selective_form': str(request.form['selective_form'])}
 		except:
 			period = {'type': request.form['period_info'], 'value': request.form['period_info_value']}
@@ -30,6 +39,7 @@ def upload_file():
 		if file and allowed_file(file.filename):
 			# filename = secure_filename(file.filename)
 			# file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			
 			session['uploaded'] = file.stream.read()
 			session['period'] = period
 			session['tool'] = tool
