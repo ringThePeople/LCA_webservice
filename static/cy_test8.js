@@ -10,16 +10,11 @@ selectable: true,
         elements: [
         {
             group: 'node',
-            position: {
-                x: 100,
-                y: 100
-            },
+            
             selectable: true
         }
         ],
-        layout: {
-            name: 'breadthfirst'      
-        },
+        
 
         style: [
             {
@@ -63,15 +58,17 @@ selectable: true,
         elements: JSON.parse(graph_data)
     });
 
-// download
-var jpg64 = cy.jpg();
-$('#jpg-eg8').attr('href', jpg64);
 
 // slect node color
 for(var i=0;i<cy.$('node').length; i++){
     cy.$('node')[i].css("background-color", cy.$('node')[i].data('col'));
+    cy.$('node')[i].renderedPosition("x", (cy.$('node')[i].data('x')*40 + 30));
+    cy.$('node')[i].renderedPosition("y", (cy.$('node')[i].data('y')*20 - 50));
 }
 
+// download
+var jpg64 = cy.jpg();
+$('#jpg-eg8').attr('href', jpg64);
 
 
 

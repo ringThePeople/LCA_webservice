@@ -19,9 +19,14 @@ def allowed_file(filename):
 def upload_file():
 	if request.method == 'POST':
 		file = request.files['timeseries_data']
-		period = {'type': request.form['period_info'], 'value': request.form['period_info_value']}
+		try:
+			print "request.form_start", str(request.form['selective_form'])
+			
+			period = {'type': request.form['period_info'], 'value': request.form['period_info_value'], 'selective_form': str(request.form['selective_form'])}
+		except:
+			period = {'type': request.form['period_info'], 'value': request.form['period_info_value']}
 		tool = request.form['tool-name']
-		print tool
+		print "tool name: ",tool
 		if file and allowed_file(file.filename):
 			# filename = secure_filename(file.filename)
 			# file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -41,6 +46,7 @@ def display_result():
 			return redirect(url_for('upload_file'))
 		_data = session['uploaded']
 		_options = {'period': session['period'], 'tool': session['tool']}
+		print "_options", _options
 		graphdata, resp = workunit.run(_data, _options)
 		
 		if not resp: #no error occurred

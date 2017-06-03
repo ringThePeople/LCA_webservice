@@ -1,31 +1,135 @@
 {% extends "__init__.html" %}
 {% block content %}
+<!--  -->
+<script language="javascript">
+var oTbl;
+//add Row 
+
+function visibleButton(){
+	oTbl = document.getElementById("totalTable");
+	oTbl.style.visibility = "visible";
+}
+
+function hiddenButton(){
+	oTbl = document.getElementById("totalTable");
+	oTbl.style.visibility = "hidden";	
+}
+
+function insRow() {
+  oTbl = document.getElementById("addTable");
+  var oRow = oTbl.insertRow();
+  oRow.onmouseover=function(){oTbl.clickedRowIndex=this.rowIndex}; //clickedRowIndex - check the position clicked
+  var oCell = oRow.insertCell();
+
+  //added Form Tag
+  var frmTag = "Start Time Point: &nbsp;"
+  frmTag += "<input type='textarea' name='addStartPoint' style='width:50px; height:15px;'> ";
+  frmTag += "&nbsp; Period: &nbsp;";
+  frmTag += "<input type='textarea' name='addPeriod' value=4 style='width:50px; height:15px;'> ";
+  frmTag += "<input type=button value='DELETE' onClick='removeRow()' style='cursor:hand'>";
+  oCell.innerHTML = frmTag;
+}
+//Row delete
+function removeRow() {
+  oTbl.deleteRow(oTbl.clickedRowIndex);
+}
+
+function frmCheck()
+{
+  var frm = document.forms[0];
+  var ret_Tag = "";
+  var i =0;
+  for(i = 0; i <= frm.elements.length - 1; i++ ){
+     if( frm.elements[i].name == "addStartPoint" )
+     {
+         if( !frm.elements[i].value ){
+             alert("Selected Period, Start Point Value is Empty!");
+                 frm.elements[i].focus();
+	 return;
+          }
+      }
+      if( frm.elements[i].name == "addPeriod" )
+     {
+         if( !frm.elements[i].value ){
+             alert("Selected Period, Period Value is Empty!");
+                 frm.elements[i].focus();
+	 return;
+          }
+      }
+   }
+ 
+ for(i = 0; i <= frm.elements.length - 1; i++ ){
+     if( frm.elements[i].name == "addStartPoint" )
+     {
+         ret_Tag += frm.elements[i].value;
+         ret_Tag += ","
+      }
+      
+    }
+    ret_Tag += ";"
+   for(i = 0; i <= frm.elements.length - 1; i++ ){
+     if( frm.elements[i].name == "addPeriod" )
+     {
+         ret_Tag += frm.elements[i].value;
+         ret_Tag += ","
+      }
+      
+    }
+    oTbl = document.getElementById("use_for_selective");
+	oTbl.value = ret_Tag;
+ }
+</script>
+<!--  -->
+
 <div id="tool-content">
 	<div>Upload file here</div>
 	<div>
 		<form action="" method="post" enctype="multipart/form-data" id="file-uploader">
 			<input type="file" name="timeseries_data"/>
-			<input type="submit" value="Upload File"/>
+			<!-- input type="submit" value="Upload File"--> 
+			<button onClick="frmCheck()">Upload File</button>
 			<div id="option-div">
 				<div>Option</div>
-				<input type="radio" name="period_info" value="at_once" checked>No period, whole data at once <br/>
-				<input type="radio" name="period_info" value="available">Period: <input type="textarea" name="period_info_value" value="4">
+				<input type="radio" name="period_info" value="at_once" checked onClick="hiddenButton()">Analyze using whole time points data <br/>
+				<input type="radio" name="period_info" value="available" onClick="hiddenButton()"><!-- Analyze muliple networks with same time period -->Period: &nbsp;<input type="textarea" name="period_info_value" value="4">
+				<br>
+				<input type="radio" name="period_info" value="selective" onClick="visibleButton()">User specified periods<input type="textarea" id="use_for_selective" name="selective_form" style="visibility: hidden;">
+
+				<!-- <input type="button" onClick="frmCheck()"> -->
+
+<!--  -->
+      <div id="totalTable" style='visibility: hidden;'>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        Selective Period
+        <tr>
+        <td colspan="5" bgcolor="#FFFFFF" height="25" align="left">
+        <input name="addButton" type="button" style="cursor:hand" onClick="insRow()" value="ADD">
+       	<font color="#FF0000">*</font>Click to add more selective Period</td></tr>
+	    
+	    <tr>
+		<table id="addTable" width="400" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0">
+            <!-- <tr>
+              <td><input type="text" name="addText" style="width:350px; height:20px;"></td>
+              <td align="left"></td>
+            </tr> -->
+
+          </table>
+        </tr>
+       </table>
+       </div>
+<!--  -->
+				
 			</div>
 		</form>
-		<div>
-<!-- 			<div>Selective Period</div>
-				<div>Period 1 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP1" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP1" style='width: 40px;'></div>
-				<div>Period 2 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP2" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP2" style='width: 40px;'></div>
-				<div>Period 3 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP3" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP3" style='width: 40px;'></div>
-				<div>Period 4 &nbsp; &nbsp; Start TP :&nbsp;<input type="textarea" name="S_TP4" style='width: 40px;'>End TP :&nbsp;<input type="textarea" name="E_TP4" style='width: 40px;'></div>
- -->								
- 			<div>Start Time Point :&nbsp; &nbsp; <input type="textarea" name="Start_TP" value="1" style='width: 40px;'></div>
+		<div>								
+ 			
+
 
 			<br/>
 			<div>Tools&nbsp;
 			<select name="tool-name" form="file-uploader">
-				<option value="tsv2cy">TSV2Cy</option>
 				<option value="genie3">GENIE3</option>
+				<option value="tsv2cy">TSV2Cy</option>
 			</select>
 			</div>
 		</div>
