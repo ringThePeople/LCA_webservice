@@ -4,7 +4,9 @@
 
 	<script type='text/javascript' src="{{ url_for('static', filename='cytoscape.min.js') }}"></script>
 	<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='cy.css') }}">
-<div style="background-color: #A0A0A0; width: : 3450px;"><H1>Layout</H1></div>
+<div style="background-color: #A0A0A0; width: : 3450px;"><!-- <H1>Layout</H1> --></div>
+
+<!-- main body -->
 <div style="overflow:auto; width:870px;height: 750px;float: left;">
 <div style="width: 900%;">
 <!-- Period 1 -->
@@ -178,19 +180,28 @@
 
 </div>
 </div>
+<!-- main body end -->
+
 
 <!-- side bar -->
-<div style='display: inline;float: left;width: 400px; height:680px;border:4px solid gray;'>
-	<img src="/static/colormeaning.png" height="100">
+<div style='display: inline;float: left;width: 400px; height:670px;border:1px solid gray;'>
 
-	<div style='display: inline;float: left;width: 250px; border:4px'>
-	<div id="cy-barP" class = "cy-bar-div"></div>	
+	<div style="background-color: #C0C0C0;width: 400px;border-radius: 0.3em;border:1px solid gray;">
+	<div style="padding: 3px 7px 3px 7px;margin-top: 5px;margin-left: 5px;margin-right: 5px;background-color: #E0E0E0;width: 120px;border-radius: 0.3em;border:1px solid gray;">Node/Edge Info</div>
+	</div>
+	
+	<img src="/static/colormeaning.png" height="75" style="margin-top: 20px;margin-bottom: 10px;margin-left:40px;padding-bottom: 30px;border-bottom:1px solid gray;">
+
+	<div style='display: inline;float: left;width: 250px; border:4px;margin-top: 20px;margin-left:40px;'>
+	<div id="cy-barP" class = "cy-bar-div" style="font-weight: bold;"></div>	
 	<div id="cy-barS" class = "cy-bar-div"></div>
 	<div id="cy-barT" class = "cy-bar-div"></div>
 	<div id="cy-barI" class = "cy-bar-div"></div>
 	<div id="cy-barD" class = "cy-bar-div"></div></div>
 
 </div>
+<!-- side bar end -->
+
 
 {% endblock %}
 
