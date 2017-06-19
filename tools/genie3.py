@@ -2,6 +2,8 @@ __author__ = 'WonhoShin, JongminLee'
 
 from sklearn.tree.tree import BaseDecisionTree
 from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
+from sklearn.ensemble import GradientBoostingRegressor, AdaBoostRegressor
+from sklearn.tree import DecisionTreeRegressor
 from numpy import *
 import pandas as pd
 import time
@@ -9,7 +11,31 @@ from operator import itemgetter
 import csv
 
 def compute_feature_importances(estimator):
-    if isinstance(estimator, BaseDecisionTree):
+
+    if isinstance(estimator,GradientBoostingRegressor):
+        print "compute GB feature importance score"
+        total_sum = zeros((estimator.n_features,),dtype=float64)
+        weighted_sum = 0
+        for i,stage in enumerate(estimator.estimators_):
+            stage_sum = sum(tree.tree_.compute_feature_importances(normalize=False) for tree in stage) / len(stage)
+            total_sum += stage_sum
+        importances = total_sum/len(estimator.estimators_)
+        return importances
+
+    elif isinstance(estimator,AdaBoostRegressor):
+        print "compute AB feature importance score"
+        importances = [e.tree_.compute_feature_importances(normalize=False)
+                       for e in estimator.estimators_]
+        importances = asarray(importances)
+        if importances.shape[0] == len(estimator.estimator_weights_):
+            estimator_weights = estimator.estimator_weights_[:,newaxis]
+        else:
+            estimator_weights = estimator.estimator_weights_[estimator.estimator_weights_!=0][:,newaxis]
+
+        importances = importances  * estimator_weights
+        return sum(importances,axis=0) / len(estimator)
+
+    elif isinstance(estimator, BaseDecisionTree):
         return estimator.tree_.compute_feature_importances(normalize=False)
     else:
         importances = [e.tree_.compute_feature_importances(normalize=False)
@@ -320,7 +346,7 @@ def genie3_single(expr_data, output_idx, input_idx, tree_method, K, ntrees):
 
     return vi
 
-def genie3_time(TS_data, gene_names=None, regulators='all', tree_method='RF', K='sqrt',
+def genie3_time(TS_data, gene_names=None, regulators='all', tree_method='GB', K='sqrt',
                 ntrees=1000, h=1):
     '''Computation of tree-based scores for all putative regulatory links.
 
@@ -400,7 +426,7 @@ def genie3_time(TS_data, gene_names=None, regulators='all', tree_method='RF', K=
             if not sIntersection:
                 raise ValueError('The genes must contain at least one candidate regulator')
 
-    if tree_method is not 'RF' and tree_method is not 'ET':
+    if tree_method is not 'RF' and tree_method is not 'ET' and tree_method is not 'AB' and tree_method is not 'GB':
         raise ValueError('input argument tree_method must be "RF" (Random Forests) or "ET" (Extra-Trees)')
 
     if K is not 'sqrt' and K is not 'all' and not isinstance(K, int):
@@ -444,6 +470,7 @@ def genie3_time(TS_data, gene_names=None, regulators='all', tree_method='RF', K=
 #        if(i==3):
 #            print "expr_data :", TS_data
 #            print "input_idx", input_idx
+
 
         vi = genie3_time_single(TS_data, i, input_idx, tree_method, K, ntrees, h)
         if vi[0] is None:
@@ -533,7 +560,17 @@ def genie3_time_single(TS_data, output_idx, input_idx, tree_method, K, ntrees, h
                 print_K = ninputs
                 treeEstimator = ExtraTreesRegressor(n_estimators=ntrees, max_features="auto")
 
-    print "Tree method = %s, K = %d, %d trees, time lag = %d" % (print_method, print_K, ntrees, h)
+    elif tree_method == 'GB':
+        print "Gradient Boosting"
+        treeEstimator = GradientBoostingRegressor(n_estimators=ntrees)
+
+    elif tree_method =='AB':
+        #Adaboost
+        print "AbaBoost"
+        treeEstimator = AdaBoostRegressor(DecisionTreeRegressor(),n_estimators=ntrees)
+
+
+    #print "Tree method = %s, K = %d, %d trees, time lag = %d" % (print_method, print_K, ntrees, h)
 
     # Learn ensemble of trees
     treeEstimator.fit(matrix_input, output)
