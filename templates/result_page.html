@@ -7,31 +7,27 @@
 <div style="background-color: #A0A0A0; width: : 3450px;"><!-- <H1>Layout</H1> --></div>
 
 <!-- main body -->
-<div style="overflow:auto; width:870px;height: 750px;float: left;">
+<div style="overflow:auto; width:1400px;height: 700px;float: left;border: 1px solid gray;">
 <div style="width: 900%;">
-<!-- Period 1 -->
+	
+		
+	
+
+<!-- Period 1,2 -->
+	{% if graphdata2 %}
+	<!-- more than 1 graph data -->
+	{% if graphdata %}
 	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
 	<div style='display: inline;float: left;width: 600px;border:1px ;'>
-		{% if graphdata %}
 			<H2>Period 1</H2>
 			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
 			<div id="cy" class="cy-div">
 			</div>
-
-
-		{% else %}
-		Cytoscape will be placed here.
-		Please upload file
-		{% endif %}
-		
 	</div>
-	
-	
 	<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
 	</div>
+	{% endif %}
 
-<!-- Period 2 -->
-	{% if graphdata2 %}
 	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
 	<div style='display: inline;float: left;width: 600px'>
 		
@@ -46,6 +42,27 @@
 	<a id="jpg-eg2" download="period2.jpg"><H3>Download as JPG</H3></a>
 	
 	</div>
+
+
+	{% else %}
+	<!-- graphdata only -->
+	{% if graphdata %}
+	<div style='display: inline;float: left;margin-left: 250px;width: 860px;border:1px solid gray;'>	
+	<div style='display: inline;float: left;width: 600px;border:1px ;'>
+			<H2>Period 1</H2>
+			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
+			<div id="cy" class="cy-div">
+			</div>
+	</div>
+	<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
+	</div>
+
+	{% else %}
+	Cytoscape will be placed here.
+	Please upload file
+	{% endif %}
+
+
 	{% endif %}
 <!-- Period 3 -->
 	{% if graphdata3 %}
@@ -184,7 +201,7 @@
 
 
 <!-- side bar -->
-<div style='display: inline;float: left;width: 400px; height:670px;border:1px solid gray;'>
+<div style='display: inline;float: left;width: 400px; height:675px;border:1px solid gray;'>
 
 	<div style="background-color: #C0C0C0;width: 400px;border-radius: 0.3em;border:1px solid gray;">
 	<div style="padding: 3px 7px 3px 7px;margin-top: 5px;margin-left: 5px;margin-right: 5px;background-color: #E0E0E0;width: 120px;border-radius: 0.3em;border:1px solid gray;">Node/Edge Info</div>
