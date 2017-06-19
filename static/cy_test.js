@@ -123,7 +123,7 @@ cy.on('select','edge', function(event){
     str = "target: " +  cy.$(':selected').data('target');
     $("#cy-barT").html(str);
 
-    str = "dbsource: " + "link_source";
+    str = "inference: " + "link_source";
     $("#cy-barD").html(str);
 
      $("#cy-barI").css("visibility", 'hidden');   
