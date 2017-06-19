@@ -67,4 +67,4 @@ def display_result():
 if __name__ == "__main__":
 	os.environ['DEBUG'] = "1"
 	app.secret_key = 'Shhh, dl zlsms rhdroehldjtjs,dksehlqslek!wjfeofh.'
-	app.run(debug=True)
+	app.run(host='0.0.0.0', port=80, debug=False) 
