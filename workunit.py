@@ -284,6 +284,7 @@ def run(_tsdata, _options):
 	elif period_info['type'] == 'selective':
 		period_string_list = (period_info['selective_form']).split(';')
 		start_point_list = (period_string_list[0].split(','))[0:-1]
+		# each period -> each end point 
 		each_period_list = (period_string_list[1].split(','))[0:-1]
 		if(len(start_point_list) == 0):
 			print "Selective Period input is Empty"
@@ -313,7 +314,11 @@ def run(_tsdata, _options):
 			except:
 				print i+1, "th wrong period"
 				continue
-			end_point = start_point + each_period - 1
+			# this method : each period operation
+			# end_point = start_point + each_period - 1
+
+			# change selective system
+			end_point = each_period
 			if(end_point <= table_len):
 				print "iteration : ", i+1
 				df_2=df.iloc[start_point:(end_point+1),:]
