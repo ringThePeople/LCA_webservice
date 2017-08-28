@@ -6,6 +6,7 @@ import os
 import workunit
 import pandas as pd
 from StringIO import StringIO
+import numpy as np
 
 UPLOAD_FOLDER = './tmp/'
 ALLOWED_EXTENSIONS = set(['csv','tsv','txt'])
@@ -48,13 +49,26 @@ def upload_file():
 			period = {'type': request.form['period_info'], 'value': request.form['period_info_value']}
 		tool = 'genie3'
 		
-		session['uploaded']=[]
+		session['uploaded']={}
 		session['period'] = period
 		session['tool'] = tool
 
-		print "for mun"
-		for file_ in file_list:
-			session['uploaded'].append(file_.stream.read())
+		print "for mun",session['uploaded'] , len(file_list)
+		print file_list[0]
+
+
+		for i,file_ in enumerate(file_list):
+			#It should be .stream.read()
+			#session['uploaded'].append(file_.stream.read())
+			session['uploaded'][int(i)] = file_.stream.read()
+			print type(session['uploaded'])
+
+
+		#print "file_list length", len(file_list)
+		# print type(session['uploaded'])
+		# print type(session['uploaded'].keys())
+		print "uplo", len(session['uploaded'])
+		# print session['uploaded']
 		print "resp start"
 		resp=make_response(redirect(url_for('display_result'), code=307))
 		print "resp end"
@@ -83,33 +97,48 @@ def display_result():
 		if 'uploaded' not in session:
 			return redirect(url_for('upload_file'))
 		
+		#Conver String to StringIO in file_list to use pd.read_csv
+		print "sessss", session['uploaded']
+		print "sssss", len(session['uploaded'])
+		#file_io_list = session['uploaded']
+		file_io_list = [StringIO(session['uploaded'][file_]) for file_ in session['uploaded'].keys()]
+		
+		print file_io_list
+		if len(file_io_list) ==1:
+			print('Using Single Experiment Data')
+		elif len(file_io_list) >=2:
+			print("Using Multiple Experiments Data")
+		elif len(file_io_list) ==0:
+			raise ValueError('No file has been assigned')
+		else:
+			raise ValueError('file_list length is negative !!')
 
+		#_data = session['uploaded'][0]
+		# print type(_data)
+		# print _data
 
-		_data = session['uploaded'][0]
-		print type(_data)
-		print _data
-
-		print "StringIO try ======"
-		print pd.read_csv(StringIO(_data),sep="\t")
+		# print "StringIO try ======"
+		# print pd.read_csv(StringIO(_data),sep="\t")
+		
 		_options = {'period': session['period'], 'tool': session['tool']}
 		print "_options", _options
 
-		# transpose data
-		xdata = [row.split('\t') for row in _data.split('\n')]
+		# # transpose data
+		# xdata = [row.split('\t') for row in _data.split('\n')]
 		
-		xdata = xdata[:-1]
+		# xdata = xdata[:-1]
 
-		data = ""
-		print "xdata", xdata
-		print type(xdata[0][5])
-		for cols in range(0, len(xdata[0])):
-			data += str(xdata[0][cols].split('\r')[0])
-			for rows in range(1, len(xdata)):
-				data += "\t"
-				data += str(xdata[rows][cols].split('\r')[0])
-			data += "\n"
-		print "-----data-----", data
-		graphdata, resp = workunit.run(data, _options)
+		# data = ""
+		# print "xdata", xdata
+		# print type(xdata[0][5])
+		# for cols in range(0, len(xdata[0])):
+		# 	data += str(xdata[0][cols].split('\r')[0])
+		# 	for rows in range(1, len(xdata)):
+		# 		data += "\t"
+		# 		data += str(xdata[rows][cols].split('\r')[0])
+		# 	data += "\n"
+		# print "-----data-----", data
+		graphdata, resp = workunit.run(file_io_list, _options)
 		
 		if not resp: #no error occurred
 			return render_template('result_page.html', graphdata=graphdata[0], graphdata2 = graphdata[1], graphdata3 = graphdata[2], graphdata4 = graphdata[3], graphdata5 = graphdata[4], graphdata6 = graphdata[5], graphdata7 = graphdata[6], graphdata8 = graphdata[7], graphdata9 = graphdata[8])

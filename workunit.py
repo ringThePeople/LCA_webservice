@@ -7,6 +7,8 @@ from pandas import Series, DataFrame
 import pandas as pd
 import tools.color as toolcolor
 import tools.arrange as toolarrange
+import numpy as np
+import itertools
 
 ERROR_CODE = ["", 1]
 
@@ -92,33 +94,47 @@ def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all,
 		graphdict['nodes'].append({'data':{'id':eachnode, 'col':'#ffff00', 'x':x, 'y':y}})
 	return json.dumps(graphdict)
 
-def run(_tsdata, _options):
-	if not _tsdata:
+def run(file_io_list, _options):
+	if not file_io_list:
 		return ERROR_CODE
-	if is_valid_form(_tsdata):
+	if is_valid_form(file_io_list):
 		return ERROR_CODE
 
-	table = [row.split('\t') for row in _tsdata.split('\n')]
-	table = table[1:-1]
+	TS_arrays =[]
+	for file_io in file_io_list:
+		TS_df = pd.read_csv(file_io,sep="\t")
+		gene_names = TS_df.columns.tolist()
+		TS_array = TS_df.as_matrix()
+		TS_arrays.append(TS_array)
+
+	TS_data = np.asarray(TS_arrays)
+
+	print TS_data.shape
+	print TS_data[0]
+
+
+	#table = [row.split('\t') for row in _tsdata.split('\n')]
+	#table = table[1:-1]
 	#calculate length
-	table_len = len(table[0]) - 1
+	table_len = int(TS_data[0].shape[0])
+	print table_len
+
 	period_info = _options['period']
 	graph_count = 1
 
 
 	#make dataFrame
+	# colum_ind = []
+	# for i in range(0, len(table)):
+	# 	colum_ind.append(table[i][0])
 
-	colum_ind = []
-	for i in range(0, len(table)):
-		colum_ind.append(table[i][0])
+	# row_ind = []
+	# for i in range(1, table_len+1):
+	# 	row_ind.append(str(i))
 
-	row_ind = []
-	for i in range(1, table_len+1):
-		row_ind.append(str(i))
-
-	#df = DataFrame(columns=colum_ind, index=row_ind)
-	df = DataFrame(transpose(asarray(table))[1:],columns = asarray(table)[:,0])
-	df = df.astype(float)
+	# #df = DataFrame(columns=colum_ind, index=row_ind)
+	# df = DataFrame(transpose(asarray(table))[1:],columns = asarray(table)[:,0])
+	# df = df.astype(float)
 
 	# print df
 
@@ -129,9 +145,11 @@ def run(_tsdata, _options):
 	# 		df[col][rows] = float(table[i][j])
 	# 		j = j+1
 
+	#temp 
 
-	normalized_df=df.copy(deep=True)
-	for gene in df.columns:
+	normalized_df = pd.DataFrame(np.copy(TS_data[0]),columns=gene_names)
+	#normalized_df=df.copy(deep=True)
+	for gene in gene_names:
 		normalized_df[gene] = (normalized_df[gene]-normalized_df[gene].mean())/(normalized_df[gene].std())
 
 	thr = 0.05
@@ -140,10 +158,6 @@ def run(_tsdata, _options):
 	print "over_ list",over_exp_genes
 	print "under_ list", under_exp_genes
 
-
-
-
-	
 
 	_jsons = [None, None, None, None, None, None, None, None, None, None ]	
 	sp = 1
@@ -155,27 +169,34 @@ def run(_tsdata, _options):
 	over_exp_genes_list = [None, None, None, None, None, None, None, None, None, None ]
 	under_exp_genes_list = [None, None, None, None, None, None, None, None, None, None ]
 
+	#berex request
+	all_edge_pos_tuple_list = list(itertools.permutations(gene_names,2))
+	all_edge_pos = [{'source':edge_pos[0],'target':edge_pos[1]} for edge_pos in all_edge_pos_tuple_list]
+
+	all_vp = bex.get_berexedges(all_edge_pos)
+	bex_all = bex.berexresult_to_edgelist(all_vp)
+
 	if period_info['type'] == 'at_once':
 		graph_count = 1
-		all_edge_pos = []
-		for node_in in df.columns:
-			for node_s in df.columns:
-				if(node_in == node_s):
-					continue
-				edge_one = {}
-				edge_one['source'] = node_in
-				edge_one['target'] = node_s
-				all_edge_pos.append(edge_one)
-		all_vp = bex.get_berexedges(all_edge_pos)
+		# all_edge_pos = []
+		# for node_in in df.columns:
+		# 	for node_s in df.columns:
+		# 		if(node_in == node_s):
+		# 			continue
+		# 		edge_one = {}
+		# 		edge_one['source'] = node_in
+		# 		edge_one['target'] = node_s
+		# 		all_edge_pos.append(edge_one)
+		# all_vp = bex.get_berexedges(all_edge_pos)
 		
-		bex_all = bex.berexresult_to_edgelist(all_vp)
+		# bex_all = bex.berexresult_to_edgelist(all_vp)
 		
-		tcol = toolhub.run(_tsdata, _options, 1, 1)
+		tcol = toolhub.run(TS_data,gene_names, _options, 1, 1)
 		print "tcol", tcol
 		tcol_rows = [row for row in tcol.split('\n')]
 		#print "tcol_rows", tcol_rows
 		
-		#for berexapi
+		#Inferece edges 
 		list_nodes = []
 		for ii in range(1, len(tcol_rows)):
 			source_target_dic = {}
@@ -183,6 +204,8 @@ def run(_tsdata, _options):
 			source_target_dic['source'] = temp_row[0]
 			source_target_dic['target'] = temp_row[1]
 			list_nodes.append(source_target_dic)
+
+
 		print "list_nodes", list_nodes
 		v_p = bex.get_berexedges(list_nodes)
 		print "valid_pairs", v_p
@@ -221,27 +244,29 @@ def run(_tsdata, _options):
 			start_t = sp+ (i *period_val)
 			end_t = sp+((i+1) * period_val)-1
 			# df_2=df.copy(deep=True)
-			df_2=df.iloc[start_t:(end_t+1),:]
-			normalized_df=df_2.copy(deep=True)
-			for gene in df.columns:
+			
+			
+			df = pd.DataFrame(np.copy(TS_data[0]),columns=gene_names)
+			normalized_df=df.iloc[start_t:(end_t+1),:]
+			for gene in gene_names:
 				normalized_df[gene] = (normalized_df[gene]-normalized_df[gene].mean())/(normalized_df[gene].std())
 
 			thr = 0.05
 			over_exp_genes_list[i] , under_exp_genes_list[i] = toolcolor.get_over_under_exp_genes(normalized_df, thr=thr)
-			all_edge_pos = []
-			#all edges list can be made possible
-			for node_in in df.columns:
-				for node_s in df.columns:
-					if(node_in == node_s):
-						continue
-					edge_one = {}
-					edge_one['source'] = node_in
-					edge_one['target'] = node_s
-					all_edge_pos.append(edge_one)
-			all_vp = bex.get_berexedges(all_edge_pos)
-			bex_all = bex.berexresult_to_edgelist(all_vp)
+			# all_edge_pos = []
+			# #all edges list can be made possible
+			# for node_in in df.columns:
+			# 	for node_s in df.columns:
+			# 		if(node_in == node_s):
+			# 			continue
+			# 		edge_one = {}
+			# 		edge_one['source'] = node_in
+			# 		edge_one['target'] = node_s
+			# 		all_edge_pos.append(edge_one)
+			# all_vp = bex.get_berexedges(all_edge_pos)
+			# bex_all = bex.berexresult_to_edgelist(all_vp)
 
-			_2col_list[i] = toolhub.run(_tsdata, _options, start_t, end_t)
+			_2col_list[i] = toolhub.run(TS_data,gene_names, _options, start_t, end_t)
 			
 			if _2col_list[i][0:4] == 'None':
 				i = i+1
@@ -302,18 +327,18 @@ def run(_tsdata, _options):
 		if(len(start_point)>1):
 			graph_count = 2
 
-		all_edge_pos = []
-		#all edges list can be made possible
-		for node_in in df.columns:
-			for node_s in df.columns:
-				if(node_in == node_s):
-					continue
-				edge_one = {}
-				edge_one['source'] = node_in
-				edge_one['target'] = node_s
-				all_edge_pos.append(edge_one)
-		all_vp = bex.get_berexedges(all_edge_pos)
-		bex_all = bex.berexresult_to_edgelist(all_vp)
+		# all_edge_pos = []
+		# #all edges list can be made possible
+		# for node_in in df.columns:
+		# 	for node_s in df.columns:
+		# 		if(node_in == node_s):
+		# 			continue
+		# 		edge_one = {}
+		# 		edge_one['source'] = node_in
+		# 		edge_one['target'] = node_s
+		# 		all_edge_pos.append(edge_one)
+		# all_vp = bex.get_berexedges(all_edge_pos)
+		# bex_all = bex.berexresult_to_edgelist(all_vp)
 
 		adj_list = []
 		for i in range(0, len(start_point_list)):
@@ -334,14 +359,14 @@ def run(_tsdata, _options):
 			end_point = each_period
 			if(end_point <= table_len):
 				print "iteration : ", i+1
-				df_2=df.iloc[start_point:(end_point+1),:]
-			normalized_df=df_2.copy(deep=True)
-			for gene in df.columns:
+				df = pd.DataFrame(np.copy(TS_data[0]),columns=gene_names)
+				normalized_df=df.iloc[start_point:(end_point+1),:]
+			for gene in gene_names:
 				normalized_df[gene] = (normalized_df[gene]-normalized_df[gene].mean())/(normalized_df[gene].std())
 			thr = 0.05		
 			over_exp_genes_list[i] , under_exp_genes_list[i] = toolcolor.get_over_under_exp_genes(normalized_df, thr=thr)
 			
-			_2col_list[i] = toolhub.run(_tsdata, _options, start_point, end_point)
+			_2col_list[i] = toolhub.run(TS_data,gene_names, _options, start_point, end_point)
 			
 			if _2col_list[i] is None:
 				continue
@@ -360,6 +385,7 @@ def run(_tsdata, _options):
 				print "valid_pairs", v_p_list[i]
 				bex_to_edgelist_list[i] = bex.berexresult_to_edgelist(v_p_list[i])
 				print "bex_to_edgelist", bex_to_edgelist_list[i]
+			
 			except:
 				continue
 			_line = _2col_list[i].split('\n')

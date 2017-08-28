@@ -9,7 +9,7 @@ import pandas as pd
 import time
 from operator import itemgetter
 import csv
-
+import numpy as np
 
 def compute_feature_importances(estimator):
 
@@ -612,7 +612,7 @@ def cutoff_by_percentage(TFlist, _adj, threshold):
         adj[tf1][tf2] = 1
     return adj
 
-def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='realvalue', threshold = 0.3, except_list = []):
+def run_GENIE3(TS_data, gene_names=None,ntrees=100 ,start_point = None ,end_point = None, cutoff='realvalue', threshold = 0.3, except_list = []):
 
     # Current Form
     # TF1  #.###  #.###  #.###  ...
@@ -621,31 +621,37 @@ def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='realvalue',
     # ...   ...    ...    ...
 
     # File OPEN, need to modify to using python data structure
-    table = [row.split('\t') for row in tsdata.split('\n')]
-    # line and tabs are seperated
-    table = table[0:-1]
-    print "=====table in genie3====", table
-    valTable = []
-    TFlist = []
+    # table = [row.split('\t') for row in tsdata.split('\n')]
+    # # line and tabs are seperated
+    # table = table[0:-1]
+    # print "=====table in genie3====", table
+    # valTable = []
+    # TFlist = []
+
     if not start_point:
         start_point = 1
     if not end_point:
-        end_point = len(table[0]) - 1
+        end_point = int(TS_data[0].shape[0])
 
-    print "Table shape", asarray(table).shape
+    # print "Table shape", asarray(TS).shape
 
-    for j, row in enumerate(table):
-        print row[0], except_list
-        if j == 0 or row[0] in except_list:
-            continue
-        TFlist.append(row[0])
-        valTable.append(row[start_point:end_point+1])
+    # for j, row in enumerate(table):
+    #     print row[0], except_list
+    #     if j == 0 or row[0] in except_list:
+    #         continue
+    #     TFlist.append(row[0])
+    #     valTable.append(row[start_point:end_point+1])
     # print TFlist
     # print valTable
-    print "TFList length", len(TFlist)
-    _adj = pd.DataFrame(data=array(zeros((len(TFlist), len(TFlist)), dtype=float32)), columns=TFlist, index=TFlist, dtype=float32)
+
+    print "=====start_point", start_point-1
+    print "======end_point", end_point-1
+    TS_data = np.asarray([TS_array[(start_point-1):(end_point)] for TS_array in TS_data])
+    print "=======gene names=====", gene_names
+    print "gene_names length", len(gene_names)
+    _adj = pd.DataFrame(data=array(zeros((len(gene_names), len(gene_names)), dtype=float32)), columns=gene_names, index=gene_names, dtype=float32)
 #    print "_adj", _adj.ix[0, 0]
-    TS_data = array([array(valTable).T])
+#    TS_data = array([array(valTable).T])
     print _adj.shape
  
     # TS_data = array([array(valTable).T, array(valTable).T, array(valTable).T])
@@ -657,7 +663,7 @@ def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='realvalue',
 
 #    print "no error, run_Geine3"
     print "====TS_data ====", TS_data
-    VIM = genie3_time(TS_data, gene_names=TFlist, regulators=TFlist,ntrees=100) #ntrees should be inputted.
+    VIM = genie3_time(TS_data, gene_names=gene_names, regulators='all', ntrees=ntrees) #ntrees should be inputted.
     print "======VIM =====", VIM[0][0]
 
 #check error
@@ -670,9 +676,9 @@ def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='realvalue',
 
     adj = None
     if cutoff == 'realvalue':
-        adj = cutoff_by_threshold(TFlist, _adj, threshold)
+        adj = cutoff_by_threshold(gene_names, _adj, threshold)
     elif cutoff == 'percentage':
-        adj = cutoff_by_percentage(TFlist, _adj, threshold)
+        adj = cutoff_by_percentage(gene_names, _adj, threshold)
     elif cutoff == 'raw':
         adj = _adj
 
@@ -682,66 +688,66 @@ def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='realvalue',
         adj.loc[:,node] = zeros(len(adj.index))
     return adj
 
-def run_GENIE3_multiple_observation(rootdir, med_num = None, observation = 3, start_point = 1, end_point = 20, cutoff='realvalue', threshold = 0.05, except_list = ['NT']):
-    # if not isinstance(med_num, (int, integer)):
-    #     print "Wrong Medicine #"
-    #     return
-    adj_list = []
-    print "START:", start_point, "END:", end_point
-    for i in [med_num]: #(1,28)
-        file = open(rootdir + '/' + i, 'rb')
-        data = csv.reader(file, delimiter='\t')
-        table = [row for row in data]
+# def run_GENIE3_multiple_observation(rootdir, med_num = None, observation = 3, start_point = 1, end_point = 20, cutoff='realvalue', threshold = 0.05, except_list = ['NT']):
+#     # if not isinstance(med_num, (int, integer)):
+#     #     print "Wrong Medicine #"
+#     #     return
+#     adj_list = []
+#     print "START:", start_point, "END:", end_point
+#     for i in [med_num]: #(1,28)
+#         file = open(rootdir + '/' + i, 'rb')
+#         data = csv.reader(file, delimiter='\t')
+#         table = [row for row in data]
 
-        valTable = []
-        for j in range(observation):
-            valTable.append([])
-        TFlist = []
+#         valTable = []
+#         for j in range(observation):
+#             valTable.append([])
+#         TFlist = []
 
-        for j, row in enumerate(table):
-            if j == 0 or row[0] in except_list:
-                continue
-            TFlist.append(row[0])
-            for obs_num in range(1, observation + 1):
-                valTable[obs_num - 1].append(row[(start_point-1) * observation + obs_num : end_point * observation + 1 : observation])
-                print len(row), row
-                print range(100)[(start_point-1) * observation + obs_num : end_point * observation + 1 : observation]
-                print row[(start_point-1) * observation + obs_num : end_point * observation + 1 : observation]
-                print "-----------------------"
-        print TFlist
-        print valTable
+#         for j, row in enumerate(table):
+#             if j == 0 or row[0] in except_list:
+#                 continue
+#             TFlist.append(row[0])
+#             for obs_num in range(1, observation + 1):
+#                 valTable[obs_num - 1].append(row[(start_point-1) * observation + obs_num : end_point * observation + 1 : observation])
+#                 print len(row), row
+#                 print range(100)[(start_point-1) * observation + obs_num : end_point * observation + 1 : observation]
+#                 print row[(start_point-1) * observation + obs_num : end_point * observation + 1 : observation]
+#                 print "-----------------------"
+#         print TFlist
+#         print valTable
 
-        _adj = pd.DataFrame(data=array(zeros((len(TFlist), len(TFlist)), dtype=float32)), columns=TFlist, index=TFlist, dtype=float32)
-        # TS_data = array([array(valTable).T])
-        TS_data = valTable
-        for j in range(len(TS_data)):
-            TS_data[j] = array(TS_data[j]).T
-        TS_data = array(TS_data)
+#         _adj = pd.DataFrame(data=array(zeros((len(TFlist), len(TFlist)), dtype=float32)), columns=TFlist, index=TFlist, dtype=float32)
+#         # TS_data = array([array(valTable).T])
+#         TS_data = valTable
+#         for j in range(len(TS_data)):
+#             TS_data[j] = array(TS_data[j]).T
+#         TS_data = array(TS_data)
 
-        print "TSDATAINFO"
-        print len(valTable), len(valTable[0]), len(valTable[0][0])
-        print TS_data[0].shape
+#         print "TSDATAINFO"
+#         print len(valTable), len(valTable[0]), len(valTable[0][0])
+#         print TS_data[0].shape
 
-        VIM = genie3_time(TS_data, gene_names=TFlist, regulators=TFlist)
+#         VIM = genie3_time(TS_data, gene_names=TFlist, regulators=TFlist)
 
-        # Get the ranking of network edges
-        get_link_list(VIM, adj=_adj)
+#         # Get the ranking of network edges
+#         get_link_list(VIM, adj=_adj)
 
-        adj = None
-        if cutoff == 'realvalue':
-            adj = cutoff_by_threshold(TFlist, _adj, threshold)
-        elif cutoff == 'percentage':
-            adj = cutoff_by_percentage(TFlist, _adj, threshold)
-        elif cutoff == 'raw':
-            adj = _adj
+#         adj = None
+#         if cutoff == 'realvalue':
+#             adj = cutoff_by_threshold(TFlist, _adj, threshold)
+#         elif cutoff == 'percentage':
+#             adj = cutoff_by_percentage(TFlist, _adj, threshold)
+#         elif cutoff == 'raw':
+#             adj = _adj
 
-        for node in except_list:
-            adj.loc[node] = zeros(len(adj.columns.values))
-        for node in except_list:
-            adj.loc[:,node] = zeros(len(adj.index))
+#         for node in except_list:
+#             adj.loc[node] = zeros(len(adj.columns.values))
+#         for node in except_list:
+#             adj.loc[:,node] = zeros(len(adj.index))
 
-        adj_list.append(adj)
-        return adj
+#         adj_list.append(adj)
+#         return adj
 
 
 if __name__ == '__main__':

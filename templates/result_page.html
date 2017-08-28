@@ -65,9 +65,8 @@ wholedown.href = jpegUrl;
 
 
 <!-- <div style="background-color: #A0A0A0; width: : 3450px;"><H1>Layout</H1></div> -->
-
 <!-- main body -->
-<div id="main-body" style="overflow:auto; width:75%;float: left;border: 1px;">
+<div class="main-div" id="main-body" style="overflow:auto; width:79%;float: left;border: 1px;">
 <div style="width: 300%;">
 	
 		
@@ -107,7 +106,7 @@ wholedown.href = jpegUrl;
 	{% if graphdata %}
 	<!-- <div style='display: inline;float: left;margin-left: 250px;width: 500px;border:1px solid gray;'>	 -->
 	<div style='background-color: #ecf0f1;display: inline;float: left;width: 35%;border:1px ;'>
-			<H2 style="font-style: italic;">Period 1</H2>
+			
 			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
 				<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
 			<div id="cy" class="cy-div">
@@ -277,13 +276,12 @@ wholedown.href = jpegUrl;
 </div>
 <!-- side bar end -->
 </br>
-<h3 onClick="wholedownload()">Combining whole image</h3>
+<!-- <h3 onClick="wholedownload()">Combining whole image</h3>
 <a id="wholedown" onClick="change();" download="wholeimage.jpg"><H3>Download whole image as JPG</H3></a>
+ -->
 
-
-<canvas id="canvas" class="total-canvas" style="position: absolute;visibility: hidden;"></canvas>
-
-{% endblock %}
+<!-- <canvas id="canvas" class="total-canvas" style="position: absolute;visibility: hidden;"></canvas>
+ -->{% endblock %}
 
 
 
