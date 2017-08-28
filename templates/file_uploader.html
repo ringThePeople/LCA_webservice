@@ -2,9 +2,14 @@
 {% block content %}
 <!--  -->
 <div style="padding-top: : 20px; text-align: center;">
-<img src="/static/logo.png" height="180">
+<img src="/static/logo.png" width="900" height="150">
 </div>
 <script language="javascript">
+
+$(function() {
+ $("#content").tabs();
+});
+
 var oTbl;
 //add Row 
 
@@ -82,35 +87,46 @@ function frmCheck()
 	oTbl.value = ret_Tag;
  }
 
- function showExample(){
-  var p_i = document.getElementById("use_for_selective");
-  p_i.value = 'example'
-  oTbl = document.getElementById("waiting");
-  oTbl.innerHTML = "<h1>Calculating Example...</br>Please wait</h1>";
- }
+ // function showExample(){
+ //  var p_i = document.getElementById("use_for_selective");
+ //  p_i.value = 'example'
+ //  oTbl = document.getElementById("waiting");
+ //  oTbl.innerHTML = "<h1>Calculating Example...</br>Please wait</h1>";
+ // }
 </script>
 <!--  -->
 
 
 <!-- main wrap-->
 <!-- #tool-content -->
-<div style="width: 75%; padding-left: 12%;padding-right: 12%;">
-<div style="border: solid 1px #999;border-radius: 8px;padding: 10px;">
+<div style="width: 40%; padding-left: 30%;padding-right: 30%;">
+<!-- <div style="border: solid 1px #999;border-radius: 8px;padding: 10px;"> -->
+  <div id="content">
+            <ul>
+               <li style="font-size: 14px;">
+                  <a href="#analysis">Analysis</a>
+               </li>
+               <li style="font-size: 14px;">
+                  <a href="#help">About</a>
+               </li>
+            </ul>
+<div id="analysis" class="tab">
 	<!-- left Side -->
 <form action="" method="post" enctype="multipart/form-data" id="file-uploader">
 
   <div style='display: inline-block;width:49%;border:1px;'>  
   <div>Upload file here</div>
 	<div>
-			<input type="file" name="timeseries_data"/>
-			<!-- input type="submit" value="Upload File"--> 
-			<button onClick="frmCheck()">Upload File</button>
+			<input type="file" multiple name="timeseries_data"/>
+      
+      <!-- input type="submit" value="Upload File"--> 
+			
 			<div id="option-div">
 				<div>Option</div>
-				<input type="radio" name="period_info" value="at_once" checked onClick="hiddenButton()">Analyze using whole time points data <br/>
-				<input type="radio" name="period_info" value="available" onClick="hiddenButton()"><!-- Analyze muliple networks with same time period -->Period: &nbsp;<input type="textarea" name="period_info_value" value="4">
+				<input type="radio" name="period_info" value="at_once" checked onClick="hiddenButton()">Analyze using whole time points <br/>
+				<input type="radio" name="period_info" value="available" onClick="hiddenButton()"><!-- Analyze muliple networks with same time period -->Time Points in One Period: &nbsp;<input type="textarea" name="period_info_value" value="4">
 				<br>
-				<input type="radio" name="period_info" value="selective" onClick="visibleButton()">User specified periods<input type="textarea" id="use_for_selective" name="selective_form" style="visibility: hidden;">
+				<input type="radio" name="period_info" value="selective" onClick="visibleButton()">User Specific<input type="textarea" id="use_for_selective" name="selective_form" style="visibility: hidden;">
 
 				<!-- <input type="button" onClick="frmCheck()"> -->
 
@@ -138,32 +154,44 @@ function frmCheck()
 				
 			</div>
 
-		<div>								
-			<br/>
-			<div>Tools&nbsp;
-			<select name="tool-name" form="file-uploader">
-				<option value="genie3">BTNET</option>
-				<!--<option value="tsv2cy">TSV2Cy</option>-->
-			</select>
-			</div>
-		</div>
+      <button onClick="frmCheck()">Analyze</button>		
 	</div>
   </div>
   <!-- left side end -->
 
-  <!-- right side -->
-  <div style='display: inline-block;float: right;width:49%;border:1px;'> 
-  <span style="font-style: italic; text-decoration: underline;">Example</span></br></br>
-  <a href="/static/test.html">lca_framework_test.tsv</a></br>
- 
 
-  <button onClick="showExample()">Submit</button>
-  <div id="waiting"></div>
+
+  <!-- right side -->
+  <div style='display: inline-block;float: right;width:40%;border:1px;'> 
+  <!-- <span style="font-style: italic; text-decoration: underline;">Example</span></br></br>
+  <a href="/static/test.html">lca_framework_test.tsv</a></br> -->
+ <span style="font-style: italic;">Example File:</span>
+ <a href="../static/IRMA_Switch-on_Average.txt">IRMA-SwitchOn</a>
+
+<!--   <button onClick="showExample()">Submit</button> -->
+<!--   <div id="waiting"></div> -->
   </div>
 
   
   <!-- right side end -->
 </form>
 </div>
+            <div id="help" class="tab">
+               <span style="font-size: 25px;"> <img src="../static/logo.png"
+                  style="width:80%; height: 80%;">
+               </span>
+            </div>
 </div>
+</div>
+
+      <br />
+      <div style="font-color: #333333; width: 100%">
+         <font color="gray">
+            <center><br/>
+               *Best viewed in the latest
+               version of Chrome (31+), Safari (5.1+), or IE (11+, w/ the compatibility
+               option turned off). JavaScript and Flash required.
+            </center>
+         </font>
+      </div>
 {% endblock %}

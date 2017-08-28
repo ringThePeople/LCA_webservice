@@ -6,6 +6,7 @@ $(function(){
         wheelSensitivity: 0.1,
 boxSelectionEnabled: false,
 // autounselectify: true,
+userPanningEnabled: false,
 selectable: true,
         elements: [
         {
@@ -25,8 +26,8 @@ selectable: true,
                     'text-valign': 'center',
                     
                     'background-opacity': 0.5,
-                    'width' : 75,
-                    'height' : 75,
+                    'width' : 52,
+                    'height' : 52,
                     'border-width': 1,
                     'border-color': 'black'
                 }
@@ -37,7 +38,7 @@ selectable: true,
                 style: {
                     'width': 2,
                     'target-arrow-shape': 'triangle',
-                    'line-color': '#c0c0c0',
+                    'line-color': '#7F7C7C',
                     'target-arrow-color': '#c0c0c0',
                     'curve-style': 'bezier'
                 }
@@ -62,8 +63,8 @@ selectable: true,
 // slect node color
 for(var i=0;i<cy.$('node').length; i++){
     cy.$('node')[i].css("background-color", cy.$('node')[i].data('col'));
-    cy.$('node')[i].renderedPosition("x", (cy.$('node')[i].data('x')*40 + 30));
-    cy.$('node')[i].renderedPosition("y", (cy.$('node')[i].data('y')*20 - 50));
+    cy.$('node')[i].renderedPosition("x", (cy.$('node')[i].data('x')));
+    cy.$('node')[i].renderedPosition("y", (cy.$('node')[i].data('y')));
 }
 
 // download
@@ -73,8 +74,7 @@ $('#jpg-eg8').attr('href', jpg64);
 
 
 cy.on('select','edge', function(event){
-
-    console.log('select');
+    console.log('edge select');
     console.log(cy.$(':selected').data());
 
     $("#cy-barP").html('In Period 8');
@@ -84,27 +84,29 @@ cy.on('select','edge', function(event){
     $("#cy-barT").css("visibility", 'visible');
     $("#cy-barI").css("visibility", 'visible');
     $("#cy-barD").css("visibility", 'visible');
+
     
-    str = "source: " + cy.$(':selected').data('source');
+    str = "Source: " + cy.$(':selected').data('source');
     $("#cy-barS").html(str);
     
-    str = "target: " +  cy.$(':selected').data('target');
+    str = "Target: " +  cy.$(':selected').data('target');
     $("#cy-barT").html(str);
     
-    str = "interaction: " + cy.$(':selected').data('interaction');
-    $("#cy-barI").html(str);
+    // str = "interaction: " + cy.$(':selected').data('interaction');
+    // $("#cy-barI").html(str);
     
-    str = "dbsource: " + cy.$(':selected').data('dbsource');
+    str = "Edge Type: Inference + Prior Knowledge(" + cy.$(':selected').data('dbsource');
+    str = str + ")"
     $("#cy-barD").html(str);
     }
     else{
-    str = "source: " + cy.$(':selected').data('source');
+    str = "Source: " + cy.$(':selected').data('source');
     $("#cy-barS").html(str);
     
-    str = "target: " +  cy.$(':selected').data('target');
+    str = "Target: " +  cy.$(':selected').data('target');
     $("#cy-barT").html(str);
 
-    str = "inference: " + "link_source";
+    str = "Edge Type: " + "Inference";
     $("#cy-barD").html(str);
 
      $("#cy-barI").css("visibility", 'hidden');   
@@ -113,7 +115,7 @@ cy.on('select','edge', function(event){
 
     });
 
-
+    cy.panzoom({});
 
 });
 

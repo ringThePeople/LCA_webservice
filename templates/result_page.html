@@ -1,14 +1,74 @@
 {% extends "__init__.html" %}
 {% block content %}
+
+<script language="javascript">
+
+$(function() {
+ $("#content").tabs();
+});
+</script>
+
+<script type="text/javascript">
+function wholedownload(){
+console.log('function called');
+var img1 = document.getElementById('jpg-eg');
+var img2 = document.getElementById('jpg-eg2');
+// console.log(img1)
+console.log(img2==null)
+
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext('2d');
+
+  canvas.width = 1000;
+  canvas.height = 650;
+
+var imageObj1 = new Image();
+  imageObj1.src = img1.href;
+
+  console.log(canvas.width);
+  imageObj1.onload = function() {
+    context.drawImage(imageObj1, 0, 0);
+  };
+
+var imageObj2 = new Image();
+  imageObj2.src = img2.href;
+  imageObj2.onload = function() {
+    context.drawImage(imageObj2, 500, 0);
+  };
+}
+function change(){
+console.log('change function called');
+var canvasafter = document.getElementById('canvas');
+var jpegUrl = canvasafter.toDataURL("image/jpeg");
+
+var wholedown = document.getElementById('wholedown');
+wholedown.href = jpegUrl;
+}
+</script>
+
 <img src="/static/logo.png" height="75">
+	
+
+	<!-- for panzoom -->
+	<link href="/static/cytoscape.js-panzoom.css" rel="stylesheet" type="text/css" />
+	<link href="/static/font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
 
 	<script type='text/javascript' src="{{ url_for('static', filename='cytoscape.min.js') }}"></script>
 	<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='cy.css') }}">
-<div style="background-color: #A0A0A0; width: : 3450px;"><!-- <H1>Layout</H1> --></div>
+
+	<!-- dagre try  -->
+
+	<script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
+    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script>
+	<script src="/static/cytoscape-panzoom.js"></script>
+
+
+
+<!-- <div style="background-color: #A0A0A0; width: : 3450px;"><H1>Layout</H1></div> -->
 
 <!-- main body -->
-<div style="overflow:auto; width:1400px;height: 700px;float: left;border: 1px solid gray;">
-<div style="width: 900%;">
+<div id="main-body" style="overflow:auto; width:75%;float: left;border: 1px;">
+<div style="width: 300%;">
 	
 		
 	
@@ -17,45 +77,43 @@
 	{% if graphdata2 %}
 	<!-- more than 1 graph data -->
 	{% if graphdata %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px;border:1px ;'>
-			<H2>Period 1</H2>
+	<!-- <div style='display: inline;float: left;border:1px solid gray;'>	 -->
+	<div style='background-color: #ecf0f1;display: inline;float: left;width:16%;border:1px solid gray;'>
+			<H2>Period 1</H2>	
+			<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
 			<div id="cy" class="cy-div">
 			</div>
 	</div>
-	<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
-	</div>
+	<!-- </div> -->
 	{% endif %}
 
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<!-- <div style='display: inline;float: left;border:1px solid gray;'>	 -->
+	<div style='background-color: #ecf0f1;display: inline;float: left;width:16%; border:1px solid gray;'>
 		
 			<H2>Period 2</H2>
+			<a id="jpg-eg2" download="period2.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info2" class="graph-info-div">{{ graphdata2 }}</div>
 			<div id="cy2" class="cy-div">
 			</div>
 		
 		
-	</div>
-
-	<a id="jpg-eg2" download="period2.jpg"><H3>Download as JPG</H3></a>
-	
-	</div>
+	</div>	
+	<!-- </div> -->
 
 
 	{% else %}
 	<!-- graphdata only -->
 	{% if graphdata %}
-	<div style='display: inline;float: left;margin-left: 250px;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px;border:1px ;'>
-			<H2>Period 1</H2>
+	<!-- <div style='display: inline;float: left;margin-left: 250px;width: 500px;border:1px solid gray;'>	 -->
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 35%;border:1px ;'>
+			<H2 style="font-style: italic;">Period 1</H2>
 			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
+				<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
 			<div id="cy" class="cy-div">
 			</div>
 	</div>
-	<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
-	</div>
+	<!-- </div> -->
 
 	{% else %}
 	Cytoscape will be placed here.
@@ -66,121 +124,107 @@
 	{% endif %}
 <!-- Period 3 -->
 	{% if graphdata3 %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 		
 			<H2>Period 3</H2>
+			<a id="jpg-eg3" download="period3.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info3" class="graph-info-div">{{ graphdata3 }}</div>
 			<div id="cy3" class="cy-div">
 			</div>
 		
 		
-	</div>
-
-	<a id="jpg-eg3" download="period3.jpg"><H3>Download as JPG</H3></a>
-	
+	</div>	
 	</div>
 	{% endif %}
 <!-- Period 4 -->
 	{% if graphdata4 %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 		
 			<H2>Period 4</H2>
+			<a id="jpg4-eg" download="period4.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info4" class="graph-info-div">{{ graphdata4 }}</div>
 			<div id="cy4" class="cy-div">
 			</div>
 		
 		
 	</div>
-
-	<a id="jpg4-eg" download="period4.jpg"><H3>Download as JPG</H3></a>
-	
 	</div>
 	{% endif %}
 <!-- Period 5 -->
 	{% if graphdata5 %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 		
 			<H2>Period 5</H2>
+			<a id="jpg-eg5" download="period5.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info5" class="graph-info-div">{{ graphdata5 }}</div>
 			<div id="cy5" class="cy-div">
 			</div>
 		
 		
 	</div>
-
-	<a id="jpg-eg5" download="period5.jpg"><H3>Download as JPG</H3></a>
-	
 	</div>
 	{% endif %}
 <!-- Period 6 -->
 	{% if graphdata6 %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 		
 			<H2>Period 6</H2>
+			<a id="jpg-eg6" download="period6.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info6" class="graph-info-div">{{ graphdata6 }}</div>
 			<div id="cy6" class="cy-div">
 			</div>
 		
 		
 	</div>
-
-	<a id="jpg-eg6" download="period6.jpg"><H3>Download as JPG</H3></a>
-	
 	</div>
 	{% endif %}
 <!-- Period 7 -->
 	{% if graphdata7 %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 		
 			<H2>Period 7</H2>
+			<a id="jpg-eg7" download="period7.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info7" class="graph-info-div">{{ graphdata7 }}</div>
 			<div id="cy7" class="cy-div">
 			</div>
 		
 		
 	</div>
-
-	<a id="jpg-eg7" download="period7.jpg"><H3>Download as JPG</H3></a>
-	
 	</div>
 	{% endif %}
 <!-- Period 8 -->
 	{% if graphdata8 %}
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 		
 			<H2>Period 8</H2>
+			<a id="jpg-eg8" download="period8.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info8" class="graph-info-div">{{ graphdata8 }}</div>
 			<div id="cy8" class="cy-div">
 			</div>
 	
 		
 	</div>
-
-	<a id="jpg-eg8" download="period8.jpg"><H3>Download as JPG</H3></a>
-	
 	</div>
 	{% endif %}
 <!-- Period 9 -->
 	{% if graphdata9 %}	
-	<div style='display: inline;float: left;width: 860px;border:1px solid gray;'>	
-	<div style='display: inline;float: left;width: 600px'>
+	<div style='display: inline;float: left;border:1px solid gray;'>	
+	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
 	
 			<H2>Period 9</H2>
+			<a id="jpg-eg9" download="period9.jpg"><H3>Download as JPG</H3></a>
 			<div id="graph-info9" class="graph-info-div">{{ graphdata9 }}</div>
 			<div id="cy9" class="cy-div">
 			</div>
 	
 		
 	</div>
-
-	<a id="jpg-eg9" download="period9.jpg"><H3>Download as JPG</H3></a>
-	
 	</div>
 	{% endif %}
 	
@@ -201,15 +245,24 @@
 
 
 <!-- side bar -->
-<div style='display: inline;float: left;width: 400px; height:675px;border:1px solid gray;'>
 
-	<div style="background-color: #C0C0C0;width: 400px;border-radius: 0.3em;border:1px solid gray;">
-	<div style="padding: 3px 7px 3px 7px;margin-top: 5px;margin-left: 5px;margin-right: 5px;background-color: #E0E0E0;width: 120px;border-radius: 0.3em;border:1px solid gray;">Node/Edge Info</div>
-	</div>
-	
-	<img src="/static/colormeaning.png" height="75" style="margin-top: 20px;margin-bottom: 10px;margin-left:40px;padding-bottom: 30px;border-bottom:1px solid gray;">
+<div style='display: inline;float: left;width: 20%; height:675px;border:1px solid gray;'>
 
-	<div style='display: inline;float: left;width: 250px; border:4px;margin-top: 20px;margin-left:40px;'>
+	<div id="content">
+            <ul>
+               <li style="font-size: 14px;">
+                  <a href="#NodeEdgeInfo">Node/Edge Info</a>
+               </li>
+               <li style="font-size: 14px;">
+                  <a href="#help">About</a>
+               </li>
+            </ul>
+<div id="NodeEdgeInfo" class="tab" style="height: 100%">
+<img src="/static/colormeaning.png" style="width: 100%;padding-bottom: 30px;border-bottom:1px;">
+
+	<div style='display: inline;float: left; width: 100%; border:4px;margin-top: 20px;'>
+	</br>
+	</br>
 	<div id="cy-barP" class = "cy-bar-div" style="font-weight: bold;"></div>	
 	<div id="cy-barS" class = "cy-bar-div"></div>
 	<div id="cy-barT" class = "cy-bar-div"></div>
@@ -217,8 +270,18 @@
 	<div id="cy-barD" class = "cy-bar-div"></div></div>
 
 </div>
-<!-- side bar end -->
+	</div>
+	
+	
 
+</div>
+<!-- side bar end -->
+</br>
+<h3 onClick="wholedownload()">Combining whole image</h3>
+<a id="wholedown" onClick="change();" download="wholeimage.jpg"><H3>Download whole image as JPG</H3></a>
+
+
+<canvas id="canvas" class="total-canvas" style="position: absolute;visibility: hidden;"></canvas>
 
 {% endblock %}
 

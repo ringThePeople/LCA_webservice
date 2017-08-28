@@ -4,6 +4,8 @@ from flask import Flask, url_for, render_template, request, redirect, make_respo
 from werkzeug import secure_filename
 import os
 import workunit
+import pandas as pd
+from StringIO import StringIO
 
 UPLOAD_FOLDER = './tmp/'
 ALLOWED_EXTENSIONS = set(['csv','tsv','txt'])
@@ -27,37 +29,87 @@ def upload_file():
 			resp = make_response(redirect(url_for('display_result'), code=307))
 			return resp
 
-		file = request.files['timeseries_data']
+		print "====req file====", request.files.keys()
+		print "====33====", request.files.getlist("timeseries_data")
+		# for file_ in (request.files).keys():
+		# 	if allowed_file(request.files[file_].filename):
+		# 		file_list.append(request.files[file_])
+
+		file_list = [file_ for file_ in request.files.getlist("timeseries_data") if allowed_file(file_.filename)]
+		print "=====file_list" ,file_list
+
+		# print "============file2=======", file2
+
 		try:
 			# print "request.form_start", str(request.form['selective_form'])
 			#when selective periods chosen
 			period = {'type': request.form['period_info'], 'value': request.form['period_info_value'], 'selective_form': str(request.form['selective_form'])}
 		except:
 			period = {'type': request.form['period_info'], 'value': request.form['period_info_value']}
-		tool = request.form['tool-name']
-		print "tool name: ",tool
-		if file and allowed_file(file.filename):
-			# filename = secure_filename(file.filename)
-			# file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		tool = 'genie3'
+		
+		session['uploaded']=[]
+		session['period'] = period
+		session['tool'] = tool
+
+		print "for mun"
+		for file_ in file_list:
+			session['uploaded'].append(file_.stream.read())
+		print "resp start"
+		resp=make_response(redirect(url_for('display_result'), code=307))
+		print "resp end"
+		return resp
+
+		# if file and allowed_file(file.filename):
+		# 	# filename = secure_filename(file.filename)
+		# 	# file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		# 	session['uploaded'] = []
+		# 	session['uploaded'].append(file.stream.read())
+		# 	print "===============session type===========\n", type(session)
+		# 	print "=============session type[uploaded]============\n", type(session['uploaded'])
 			
-			session['uploaded'] = file.stream.read()
-			session['period'] = period
-			session['tool'] = tool
-			resp = make_response(redirect(url_for('display_result'), code=307))
-			return resp
+		# 	session['period'] = period
+		# 	session['tool'] = tool
+		# 	resp = make_response(redirect(url_for('display_result'), code=307))
+		# 	return resp
 	return render_template('file_uploader.html')
 
 @app.route('/res', methods=['GET','POST'])
 def display_result():
+	print "display start"
 	if request.method == 'GET':
 		return redirect(url_for('upload_file'))
 	if request.method == 'POST':
 		if 'uploaded' not in session:
 			return redirect(url_for('upload_file'))
-		_data = session['uploaded']
+		
+
+
+		_data = session['uploaded'][0]
+		print type(_data)
+		print _data
+
+		print "StringIO try ======"
+		print pd.read_csv(StringIO(_data),sep="\t")
 		_options = {'period': session['period'], 'tool': session['tool']}
 		print "_options", _options
-		graphdata, resp = workunit.run(_data, _options)
+
+		# transpose data
+		xdata = [row.split('\t') for row in _data.split('\n')]
+		
+		xdata = xdata[:-1]
+
+		data = ""
+		print "xdata", xdata
+		print type(xdata[0][5])
+		for cols in range(0, len(xdata[0])):
+			data += str(xdata[0][cols].split('\r')[0])
+			for rows in range(1, len(xdata)):
+				data += "\t"
+				data += str(xdata[rows][cols].split('\r')[0])
+			data += "\n"
+		print "-----data-----", data
+		graphdata, resp = workunit.run(data, _options)
 		
 		if not resp: #no error occurred
 			return render_template('result_page.html', graphdata=graphdata[0], graphdata2 = graphdata[1], graphdata3 = graphdata[2], graphdata4 = graphdata[3], graphdata5 = graphdata[4], graphdata6 = graphdata[5], graphdata7 = graphdata[6], graphdata8 = graphdata[7], graphdata9 = graphdata[8])
@@ -67,4 +119,6 @@ def display_result():
 if __name__ == "__main__":
 	os.environ['DEBUG'] = "1"
 	app.secret_key = 'Shhh, dl zlsms rhdroehldjtjs,dksehlqslek!wjfeofh.'
-	app.run(host='0.0.0.0', port=80, debug=False) 
+	# app.run(host='0.0.0.0', port=80, debug=False) 
+	app.run(debug=True) 
+	

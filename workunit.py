@@ -47,7 +47,7 @@ def timeseriesanalysis(_tsdata):
 # 	return json.dumps(graphdict)
 
 
-def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all, all_vp, position_list):
+def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all, all_vp, position_list, graph_count):
 	_line = _tsvdata.split('\n')
 	graphdict = {'nodes':[], 'edges':[]}
 
@@ -56,16 +56,17 @@ def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all,
 		if((e1,e2) in bex_all):
 			bex_all.remove((e1,e2))
 
+		# handling edge style if in berex
 		if((e1,e2) in _bexdata):
 			for v_ps in _validpairs:
 				if v_ps['source'] == e1 and v_ps['target'] == e2:
-					graphdict['edges'].append({'data':{'source': e1, 'target': e2, 'interaction':v_ps['interaction'], 'dbsource':v_ps['dbsource']}, 'style':{'line-color': '#c0c0c0', 'width': 6}})
+					graphdict['edges'].append({'data':{'source': e1, 'target': e2, 'interaction':v_ps['interaction'], 'dbsource':v_ps['dbsource']}, 'style':{'line-color': '#c0c0c0', 'width': 6, 'line-style': 'solid'}})
 					print "e1", e1, "e2", e2
 					break
 			continue
 
 		#graphdict['edges'].append({'data':{'source': e1, 'target': e2}, 'style':{'line-color': 'red'} })
-		graphdict['edges'].append({'data':{'source': e1, 'target': e2} })
+		graphdict['edges'].append({'data':{'source': e1, 'target': e2}, 'style':{'line-style': 'dashed'} })
 
 	# #insert edges if not in edge but in berex
 	# for (e1,e2) in bex_all:
@@ -75,6 +76,11 @@ def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all,
 	# 			break
 	for eachnode in _line[0].strip().split(';'):
 		(x,y) = position_list[eachnode]
+		x = x*35 + 35
+		y = y*20 - 50
+		if graph_count == 1:
+			x = x * 2
+
 		print "position",eachnode,"x",x,"y",y
 		if(eachnode in over_list):
 			graphdict['nodes'].append({'data':{'id':eachnode, 'col':'#c7030a', 'x':x, 'y':y}})
@@ -94,11 +100,10 @@ def run(_tsdata, _options):
 
 	table = [row.split('\t') for row in _tsdata.split('\n')]
 	table = table[1:-1]
-
 	#calculate length
 	table_len = len(table[0]) - 1
 	period_info = _options['period']
-
+	graph_count = 1
 
 
 	#make dataFrame
@@ -151,6 +156,7 @@ def run(_tsdata, _options):
 	under_exp_genes_list = [None, None, None, None, None, None, None, None, None, None ]
 
 	if period_info['type'] == 'at_once':
+		graph_count = 1
 		all_edge_pos = []
 		for node_in in df.columns:
 			for node_s in df.columns:
@@ -165,6 +171,7 @@ def run(_tsdata, _options):
 		bex_all = bex.berexresult_to_edgelist(all_vp)
 		
 		tcol = toolhub.run(_tsdata, _options, 1, 1)
+		print "tcol", tcol
 		tcol_rows = [row for row in tcol.split('\n')]
 		#print "tcol_rows", tcol_rows
 		
@@ -197,14 +204,17 @@ def run(_tsdata, _options):
 		adj_list.append(adj)
 		position_list = toolarrange.arrange_node_position(adj_list)
 
-		_jsons[0] = tsv2json_n2(tcol, bex_to_edgelist, v_p, over_exp_genes, under_exp_genes, bex_all, all_vp, position_list)
+		_jsons[0] = tsv2json_n2(tcol, bex_to_edgelist, v_p, over_exp_genes, under_exp_genes, bex_all, all_vp, position_list, graph_count)
 	
 
 		
 	elif period_info['type'] == 'available':
 		period_val = int(period_info['value'])
 		adj_list = []
-		
+		# graphs are more than one.
+		if (sp+(2 * period_val)-1 < table_len):
+			graph_count = 2
+
 		print "period_val :", period_val
 		while (sp+((i+1) * period_val)-1 < table_len) :
 			print "interation : " , i+1 
@@ -278,7 +288,7 @@ def run(_tsdata, _options):
 			if _2col_list[i] is None:
 				continue
 			
-			_jsons[i] = tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list)
+			_jsons[i] = tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list, graph_count)
 		#end - type : 'available'
 		
 	elif period_info['type'] == 'selective':
@@ -288,6 +298,9 @@ def run(_tsdata, _options):
 		each_period_list = (period_string_list[1].split(','))[0:-1]
 		if(len(start_point_list) == 0):
 			print "Selective Period input is Empty"
+		#graphs are more than one
+		if(len(start_point)>1):
+			graph_count = 2
 
 		all_edge_pos = []
 		#all edges list can be made possible
@@ -365,7 +378,7 @@ def run(_tsdata, _options):
 			if _2col_list[i] is None:
 				continue
 			try:
-				_jsons[i] = tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list)
+				_jsons[i] = tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list, graph_count)
 			except:
 				print "error detection"
 				continue

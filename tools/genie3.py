@@ -10,6 +10,7 @@ import time
 from operator import itemgetter
 import csv
 
+
 def compute_feature_importances(estimator):
 
     if isinstance(estimator,GradientBoostingRegressor):
@@ -611,7 +612,7 @@ def cutoff_by_percentage(TFlist, _adj, threshold):
         adj[tf1][tf2] = 1
     return adj
 
-def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='percentage', threshold = 0.05, except_list = []):
+def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='realvalue', threshold = 0.3, except_list = []):
 
     # Current Form
     # TF1  #.###  #.###  #.###  ...
@@ -622,14 +623,16 @@ def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='percentage'
     # File OPEN, need to modify to using python data structure
     table = [row.split('\t') for row in tsdata.split('\n')]
     # line and tabs are seperated
-    table = table[1:-1]
-
+    table = table[0:-1]
+    print "=====table in genie3====", table
     valTable = []
     TFlist = []
     if not start_point:
         start_point = 1
     if not end_point:
         end_point = len(table[0]) - 1
+
+    print "Table shape", asarray(table).shape
 
     for j, row in enumerate(table):
         print row[0], except_list
@@ -639,19 +642,24 @@ def run_GENIE3(tsdata, start_point = None, end_point = None, cutoff='percentage'
         valTable.append(row[start_point:end_point+1])
     # print TFlist
     # print valTable
+    print "TFList length", len(TFlist)
     _adj = pd.DataFrame(data=array(zeros((len(TFlist), len(TFlist)), dtype=float32)), columns=TFlist, index=TFlist, dtype=float32)
 #    print "_adj", _adj.ix[0, 0]
-    # TS_data = array([array(valTable).T])
-    TS_data = array([array(valTable).T, array(valTable).T, array(valTable).T])
-    print len(TS_data), len(TS_data[0]), len(TS_data[0][0])
+    TS_data = array([array(valTable).T])
+    print _adj.shape
+ 
+    # TS_data = array([array(valTable).T, array(valTable).T, array(valTable).T])
+    # print len(TS_data), len(TS_data[0]), len(TS_data[0][0])
 
 ## check nan
 #    print "TS_data", TS_data
 #    print "valTable", valTable
 
 #    print "no error, run_Geine3"
-
+    print "====TS_data ====", TS_data
     VIM = genie3_time(TS_data, gene_names=TFlist, regulators=TFlist,ntrees=100) #ntrees should be inputted.
+    print "======VIM =====", VIM[0][0]
+
 #check error
     # if (VIM[0][0] is None):
     #     _adj.ix[0,0] = None

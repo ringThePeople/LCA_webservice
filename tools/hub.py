@@ -9,7 +9,9 @@ def run(_data, _options, sp, ep):
 	res_adj = []
 
 	if period_info['type'] == 'at_once':
-		adj = genie3.run_GENIE3(_data)		
+		# print "====_data in hub====", _data
+		adj = genie3.run_GENIE3(_data)
+		print "=====adj in hub ====", adj		
 		twocol = repack.adj2twocol(adj)
 		#print "twocol", twocol
 		#print "type", type(twocol)
