@@ -3,13 +3,16 @@
 .graph-info-div {
 	position:absolute;
 	visibility: hidden;
+	overflow:hidden;
 	width: 10px;
+	height: 10px;
 }
 
 .cy-div {
     /*width: 500px;*/
     width: calc(100%);
-    height: 650px;
+    /*height: 650px;*/
+    height: calc(80%);
     z-index: 999;
 }
 
@@ -20,4 +23,8 @@
 .total-canvas{
 	visibility: : hidden;
 	position: absolute;
+}
+
+.upper-side{
+	height: calc(15%);
 }

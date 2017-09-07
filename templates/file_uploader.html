@@ -1,8 +1,12 @@
 {% extends "__init__.html" %}
 {% block content %}
 <!--  -->
-<div style="padding-top: : 20px; text-align: center;">
-<img src="/static/logo.png" width="900" height="150">
+<div style="padding-top: 20px; text-align: center;">
+
+<img src="/static/KOREAUniv_logo.png" style="width: 12%;  padding-bottom: 55px;padding-right: 5%;">
+<img src="/static/logo.png" style="width: 55%; height: 180px">
+<img src="/static/DMIS_logo.png" style="width: 12%; padding-bottom: 55px;padding-left: 5%;">
+
 </div>
 <script language="javascript">
 
@@ -87,20 +91,13 @@ function frmCheck()
 	oTbl.value = ret_Tag;
  }
 
- // function showExample(){
- //  var p_i = document.getElementById("use_for_selective");
- //  p_i.value = 'example'
- //  oTbl = document.getElementById("waiting");
- //  oTbl.innerHTML = "<h1>Calculating Example...</br>Please wait</h1>";
- // }
 </script>
 <!--  -->
 
 
 <!-- main wrap-->
 <!-- #tool-content -->
-<div style="width: 40%; padding-left: 30%;padding-right: 30%;">
-<!-- <div style="border: solid 1px #999;border-radius: 8px;padding: 10px;"> -->
+<div style="width: 45%; padding-left: 27.5%;padding-right: 27.5%">
   <div id="content">
             <ul>
                <li style="font-size: 14px;">
@@ -111,69 +108,56 @@ function frmCheck()
                </li>
             </ul>
 <div id="analysis" class="tab">
-	<!-- left Side -->
+
 <form action="" method="post" enctype="multipart/form-data" id="file-uploader">
 
-  <div style='display: inline-block;width:49%;border:1px;'>  
-  <div>Upload file here</div>
-	<div>
-			<input type="file" multiple name="timeseries_data"/>
-      
-      <!-- input type="submit" value="Upload File"--> 
-			
-			<div id="option-div">
-				<div>Option</div>
-				<input type="radio" name="period_info" value="at_once" checked onClick="hiddenButton()">Analyze using whole time points <br/>
-				<input type="radio" name="period_info" value="available" onClick="hiddenButton()"><!-- Analyze muliple networks with same time period -->Time Points in One Period: &nbsp;<input type="textarea" name="period_info_value" value="4">
-				<br>
-				<input type="radio" name="period_info" value="selective" onClick="visibleButton()">User Specific<input type="textarea" id="use_for_selective" name="selective_form" style="visibility: hidden;">
+  <div style='display: inline-block;border:1px;'>  
+    <div>Upload file here</div>
+  	<div>
+  			<input type="file" multiple name="timeseries_data"/>
+         <!-- example field -->
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+         <span style="font-style: italic;">Example File:</span><a href="../static/IRMA_Switch-on_Average.txt">IRMA-SwitchOn</a>
+  			<div id="option-div">
+  				<div>Option</div>
+  				<input type="radio" name="period_info" value="at_once" checked onClick="hiddenButton()">Analyze using whole time points 
+          <!-- ntree field -->
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span>Ntrees: </span>&nbsp;<input type="textarea" name="ntree_value" value="100" style="width: 80px">
+          <br/>
+  				<input type="radio" name="period_info" value="available" onClick="hiddenButton()">Time Points in One Period: &nbsp;<input type="textarea" name="period_info_value" value="4" style="width: 80px">
+          <!-- threshold field -->
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span>RIS Threshold: </span>&nbsp;<input type="textarea" name="threshold_value" value="0.25" style="width: 80px">
+  				<br>
+  				<input type="radio" name="period_info" value="selective" onClick="visibleButton()">User Specific<input type="textarea" id="use_for_selective" name="selective_form" style="visibility: hidden;">
 
-				<!-- <input type="button" onClick="frmCheck()"> -->
+  				<!-- <input type="button" onClick="frmCheck()"> -->
 
-<!--  -->
-      <div id="totalTable" style='visibility: hidden;'>
-      <table width="100%" border="0" cellpadding="0" cellspacing="0">
-        Selective Period
-        <tr>
-        <td colspan="5" bgcolor="#FFFFFF" height="25" align="left">
-        <input name="addButton" type="button" style="cursor:hand" onClick="insRow()" value="ADD">
-       	<font color="#FF0000">*</font>Click to add more selective Period</td></tr>
-	    
-	    <tr>
-		<table id="addTable" width="400" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0">
-            <!-- <tr>
-              <td><input type="text" name="addText" style="width:350px; height:20px;"></td>
-              <td align="left"></td>
-            </tr> -->
+  <!--  -->
+        <div id="totalTable" style='visibility: hidden;'>
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            Selective Period
+              <tr>
+              <td colspan="5" bgcolor="#FFFFFF" height="25" align="left">
+              <input name="addButton" type="button" style="cursor:hand" onClick="insRow()" value="ADD">
+             	<font color="#FF0000">*</font>Click to add more selective Period</td></tr>
+      	    
+      	    <tr>
+      		    <table id="addTable" width="400" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF" border="0"></table>
+            </tr>
+           </table>
+         </div>
+  <!--  -->
+  				
+  			</div>
 
-    </table>
-      </tr>
-       </table>
-       </div>
-<!--  -->
-				
-			</div>
-
-      <button onClick="frmCheck()">Analyze</button>		
-	</div>
+        <button onClick="frmCheck()">Analyze</button>		
+  	</div>
   </div>
   <!-- left side end -->
-
-
-
-  <!-- right side -->
-  <div style='display: inline-block;float: right;width:40%;border:1px;'> 
-  <!-- <span style="font-style: italic; text-decoration: underline;">Example</span></br></br>
-  <a href="/static/test.html">lca_framework_test.tsv</a></br> -->
- <span style="font-style: italic;">Example File:</span>
- <a href="../static/IRMA_Switch-on_Average.txt">IRMA-SwitchOn</a>
-
-<!--   <button onClick="showExample()">Submit</button> -->
-<!--   <div id="waiting"></div> -->
-  </div>
-
-  
-  <!-- right side end -->
+  <input type="textarea" id="widthid" name='width' value="0" style="display: none"></input>
+  <input type="textarea" id="heightid" name='height' value="0" style="display: none"></input>
 </form>
 </div>
             <div id="help" class="tab">
@@ -194,4 +178,14 @@ function frmCheck()
             </center>
          </font>
       </div>
+<script language="javascript">
+$(function() {
+var totalHeight = window.innerHeight;
+  var totalWidth = window.innerWidth;
+  $('#widthid')[0].setAttribute("value",totalWidth);
+  $('#heightid')[0].setAttribute("value",totalHeight);
+  console.log(totalWidth);
+  console.log(totalHeight);})
+</script>
 {% endblock %}
+

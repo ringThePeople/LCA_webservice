@@ -1,19 +1,24 @@
 <!doctype html>
-<meta charset="utf-8">
-<title>iBTNET</title>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='style.css') }}">
+	<script src="{{ url_for('static', filename='jquery-3.1.1.slim.min.js') }}"></script>
+	<link rel="stylesheet" type="text/css" href="./reset_code.css">
+	<link rel="stylesheet" type="text/css" href="./front_css.css">
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+	<title>iBTNET</title>
+</head>
 
-<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='style.css') }}">
-<script src="{{ url_for('static', filename='jquery-3.1.1.slim.min.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="./reset_code.css">
-<link rel="stylesheet" type="text/css" href="./front_css.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-<link rel="stylesheet"
-         href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<style type="text/css">
+html, body {height:100%; margin:0; padding:0;}
+#block-body {position:fixed; top:0; left:0; width:100%;height: 100%;}
+.block-inbody {position:relative; top:0px;display: inline;float: left;width:32%;height:100%;border:solid gray;background-color: #ecf0f1; margin: 0px;}
+</style>
 
-<div class="page" style="width: 100%">
-	<!-- <div id="tool-title"><a href="/"> <font size="5", face="Comic Sans MS">Gene Regulatory Network Inference Tool</font> </a></div> -->
-	<div>
+<body>
+<div id="block-body">
 		{% block content %}{% endblock %}
-	</div>
 </div>
+</body>

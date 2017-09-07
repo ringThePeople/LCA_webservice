@@ -12,8 +12,10 @@ def get_first_order_node_position(first_adj,node_position):
         first_effected_source_nodes = list(set(first_effected_source_nodes).difference(set(first_effected_tarted_nodes)))
 
     else:
-        raise Exception('No 1 in first adj')
-
+        print('No 1 in first adj')
+        
+        #Get any genes
+        first_effected_source_nodes = first_adj.columns.tolist()[0:2]
 
     for i,first_effected_source_node in enumerate(first_effected_source_nodes):
         if first_effected_source_node not in node_position:

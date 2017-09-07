@@ -1,5 +1,4 @@
 import json
-import tools.hub as toolhub
 from numpy import *
 import csv
 import berexapi as bex
@@ -9,6 +8,8 @@ import tools.color as toolcolor
 import tools.arrange as toolarrange
 import numpy as np
 import itertools
+import tools.repack as toolrepack
+import tools.genie3 as toolgenie3
 
 ERROR_CODE = ["", 1]
 
@@ -20,40 +21,13 @@ def timeseriesanalysis(_tsdata):
 	# import other .py file
 	return _tsdata
 
-# def tsv2json(_tsvdata):
-# 	_line = _tsvdata.split('\n')
-# 	graphdict = {'nodes':[], 'edges':[]}
-# 	for eachnode in _line[0].strip().split(';'):
-# 		graphdict['nodes'].append({'data':{'id':eachnode}})
-# 	for eachline in _line[1:]:
-# 		e1, e2 = eachline.strip().split('\t')
-# 		graphdict['edges'].append({'data':{'source': e1, 'target': e2}})
-# 	return json.dumps(graphdict)
-
-# def tsv2json_n(_tsvdata, _bexdata, _validpairs):
-# 	_line = _tsvdata.split('\n')
-# 	graphdict = {'nodes':[], 'edges':[]}
-# 	for eachnode in _line[0].strip().split(';'):
-# 		graphdict['nodes'].append({'data':{'id':eachnode}})
-# 	for eachline in _line[1:]:
-# 		e1, e2 = eachline.strip().split('\t')
-# 		if((e1,e2) in _bexdata):
-# 			for v_ps in _validpairs:
-# 				if v_ps['source'] == e1 and v_ps['target'] == e2:
-# 					graphdict['edges'].append({'data':{'source': e1, 'target': e2, 'interaction':v_ps['interaction'], 'dbsource':v_ps['dbsource']}, 'style':{'line-color': 'red', 'width': 10}})
-# 					print "e1", e1, "e2", e2
-# 					break
-# 			continue
-# 		#graphdict['edges'].append({'data':{'source': e1, 'target': e2}, 'style':{'line-color': 'red'} })
-# 		graphdict['edges'].append({'data':{'source': e1, 'target': e2} })
-# 	return json.dumps(graphdict)
-
-
-def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all, all_vp, position_list, graph_count):
+def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all, all_vp, position_list, graph_count, totalwidth, totalheight):
 	_line = _tsvdata.split('\n')
 	graphdict = {'nodes':[], 'edges':[]}
-
+	
 	for eachline in _line[1:]:
+		if(len(eachline)==0):
+			continue
 		e1, e2 = eachline.strip().split('\t')
 		if((e1,e2) in bex_all):
 			bex_all.remove((e1,e2))
@@ -67,23 +41,48 @@ def tsv2json_n2(_tsvdata, _bexdata, _validpairs, over_list, under_list, bex_all,
 					break
 			continue
 
-		#graphdict['edges'].append({'data':{'source': e1, 'target': e2}, 'style':{'line-color': 'red'} })
 		graphdict['edges'].append({'data':{'source': e1, 'target': e2}, 'style':{'line-style': 'dashed'} })
 
-	# #insert edges if not in edge but in berex
-	# for (e1,e2) in bex_all:
-	# 	for v_ps in all_vp:
-	# 		if v_ps['source'] == e1 and v_ps['target'] == e2:
-	# 			graphdict['edges'].append({'data':{'source': e1, 'target': e2, 'interaction':v_ps['interaction'], 'dbsource':v_ps['dbsource']}, 'style':{'line-style':'dashed', 'width': 2}})
-	# 			break
+	x_list = []
+	y_list = []
 	for eachnode in _line[0].strip().split(';'):
 		(x,y) = position_list[eachnode]
-		x = x*35 + 35
-		y = y*20 - 50
+		x_list.append(x)
+		y_list.append(y)
+
+	x_length = max(x_list)
+	y_length = max(y_list)
+
+	# for eachnode in _line[0].strip().split(';'):
+	# 	(x,y) = position_list[eachnode]
+	# 	xp = x*100.0/x_length
+	# 	yp = y*100.0/y_length
+		
+	# 	if(eachnode in over_list):
+	# 		graphdict['nodes'].append({'data':{'id':eachnode, 'col':'#c7030a', 'x':xp, 'y':yp}})
+	# 		continue
+	# 	if(eachnode in under_list):
+	# 		graphdict['nodes'].append({'data':{'id':eachnode, 'col':'#69bc39', 'x':xp, 'y':yp}})
+	# 		continue
+	# 	graphdict['nodes'].append({'data':{'id':eachnode, 'col':'#ffff00', 'x':xp, 'y':yp}})
+	wm = 0.22*totalwidth
+	hm = 0.64 * totalheight
+
+	for eachnode in _line[0].strip().split(';'):
+		(x,y) = position_list[eachnode]
+		print "y_length", y_length, "y", y
+		y = y_length - y + 2
+
+		x = x*wm/x_length
+		y = y*hm/y_length
 		if graph_count == 1:
 			x = x * 2
 
-		print "position",eachnode,"x",x,"y",y
+		# print "position",eachnode,"x",x,"y",y
+		# print "over_list", over_list
+		# print "under_list", under_list
+		# print "each_node", eachnode
+
 		if(eachnode in over_list):
 			graphdict['nodes'].append({'data':{'id':eachnode, 'col':'#c7030a', 'x':x, 'y':y}})
 			continue
@@ -99,6 +98,9 @@ def run(file_io_list, _options):
 		return ERROR_CODE
 	if is_valid_form(file_io_list):
 		return ERROR_CODE
+	uw,uh = _options['size']
+	totalwidth = float(uw)
+	totalheight = float(uh)
 
 	TS_arrays =[]
 	for file_io in file_io_list:
@@ -109,41 +111,14 @@ def run(file_io_list, _options):
 
 	TS_data = np.asarray(TS_arrays)
 
-	print TS_data.shape
-	print TS_data[0]
-
-
-	#table = [row.split('\t') for row in _tsdata.split('\n')]
-	#table = table[1:-1]
-	#calculate length
 	table_len = int(TS_data[0].shape[0])
 	print table_len
 
 	period_info = _options['period']
+	ntree = int(period_info['ntree'])
+	threshold = float(period_info['threshold'])
+
 	graph_count = 1
-
-
-	#make dataFrame
-	# colum_ind = []
-	# for i in range(0, len(table)):
-	# 	colum_ind.append(table[i][0])
-
-	# row_ind = []
-	# for i in range(1, table_len+1):
-	# 	row_ind.append(str(i))
-
-	# #df = DataFrame(columns=colum_ind, index=row_ind)
-	# df = DataFrame(transpose(asarray(table))[1:],columns = asarray(table)[:,0])
-	# df = df.astype(float)
-
-	# print df
-
-	# for i in range(0, len(table)):
-	# 	col = table[i][0]
-	# 	j = 1
-	# 	for rows in row_ind:
-	# 		df[col][rows] = float(table[i][j])
-	# 		j = j+1
 
 	#temp 
 
@@ -158,17 +133,14 @@ def run(file_io_list, _options):
 	print "over_ list",over_exp_genes
 	print "under_ list", under_exp_genes
 
-
-	_jsons = [None, None, None, None, None, None, None, None, None, None ]	
 	sp = 1
 	i = 0
-	##
-	_2col_list = [None, None, None, None, None, None, None, None, None, None ]
-	v_p_list = [None, None, None, None, None, None, None, None, None, None ]
-	bex_to_edgelist_list = [None, None, None, None, None, None, None, None, None, None ]
-	over_exp_genes_list = [None, None, None, None, None, None, None, None, None, None ]
-	under_exp_genes_list = [None, None, None, None, None, None, None, None, None, None ]
-
+	_jsons = []
+	_2col_list = []
+	v_p_list = []
+	bex_to_edgelist_list = []
+	over_exp_genes_list = []
+	under_exp_genes_list = []
 	#berex request
 	all_edge_pos_tuple_list = list(itertools.permutations(gene_names,2))
 	all_edge_pos = [{'source':edge_pos[0],'target':edge_pos[1]} for edge_pos in all_edge_pos_tuple_list]
@@ -178,39 +150,25 @@ def run(file_io_list, _options):
 
 	if period_info['type'] == 'at_once':
 		graph_count = 1
-		# all_edge_pos = []
-		# for node_in in df.columns:
-		# 	for node_s in df.columns:
-		# 		if(node_in == node_s):
-		# 			continue
-		# 		edge_one = {}
-		# 		edge_one['source'] = node_in
-		# 		edge_one['target'] = node_s
-		# 		all_edge_pos.append(edge_one)
-		# all_vp = bex.get_berexedges(all_edge_pos)
 		
-		# bex_all = bex.berexresult_to_edgelist(all_vp)
-		
-		tcol = toolhub.run(TS_data,gene_names, _options, 1, 1)
-		print "tcol", tcol
+		_adj = toolgenie3.run_GENIE3(TS_data, gene_names=gene_names, ntrees=ntree, threshold=threshold)
+		tcol = toolrepack.adj2twocol(_adj)
+
 		tcol_rows = [row for row in tcol.split('\n')]
-		#print "tcol_rows", tcol_rows
-		
+
 		#Inferece edges 
 		list_nodes = []
 		for ii in range(1, len(tcol_rows)):
+			if(len(tcol_rows[ii])==0):
+				continue
 			source_target_dic = {}
 			temp_row = tcol_rows[ii].split('\t')
 			source_target_dic['source'] = temp_row[0]
 			source_target_dic['target'] = temp_row[1]
 			list_nodes.append(source_target_dic)
 
-
-		print "list_nodes", list_nodes
 		v_p = bex.get_berexedges(list_nodes)
-		print "valid_pairs", v_p
 		bex_to_edgelist = bex.berexresult_to_edgelist(v_p)
-		print "bex_to_edgelist", bex_to_edgelist
 		
 		#calculate position value
 		_line = tcol.split('\n')
@@ -220,6 +178,8 @@ def run(file_io_list, _options):
 		adj = pd.DataFrame(0,index=all_node,columns=all_node)
 		for eachline in _line[1:]:
 			#e1 is source,  e2 is target
+			if(len(eachline)==0):
+				continue
 			e1, e2 = eachline.strip().split('\t')
 			adj[e2][e1] = 1
 
@@ -227,7 +187,7 @@ def run(file_io_list, _options):
 		adj_list.append(adj)
 		position_list = toolarrange.arrange_node_position(adj_list)
 
-		_jsons[0] = tsv2json_n2(tcol, bex_to_edgelist, v_p, over_exp_genes, under_exp_genes, bex_all, all_vp, position_list, graph_count)
+		_jsons.append(tsv2json_n2(tcol, bex_to_edgelist, v_p, over_exp_genes, under_exp_genes, bex_all, all_vp, position_list, graph_count, totalwidth, totalheight))
 	
 
 		
@@ -239,34 +199,24 @@ def run(file_io_list, _options):
 			graph_count = 2
 
 		print "period_val :", period_val
-		while (sp+((i+1) * period_val)-1 < table_len) :
+		while (sp+((i+1) * period_val)-1 <= table_len) :
 			print "interation : " , i+1 
 			start_t = sp+ (i *period_val)
 			end_t = sp+((i+1) * period_val)-1
 			# df_2=df.copy(deep=True)
-			
-			
+
 			df = pd.DataFrame(np.copy(TS_data[0]),columns=gene_names)
 			normalized_df=df.iloc[start_t:(end_t+1),:]
 			for gene in gene_names:
 				normalized_df[gene] = (normalized_df[gene]-normalized_df[gene].mean())/(normalized_df[gene].std())
 
 			thr = 0.05
-			over_exp_genes_list[i] , under_exp_genes_list[i] = toolcolor.get_over_under_exp_genes(normalized_df, thr=thr)
-			# all_edge_pos = []
-			# #all edges list can be made possible
-			# for node_in in df.columns:
-			# 	for node_s in df.columns:
-			# 		if(node_in == node_s):
-			# 			continue
-			# 		edge_one = {}
-			# 		edge_one['source'] = node_in
-			# 		edge_one['target'] = node_s
-			# 		all_edge_pos.append(edge_one)
-			# all_vp = bex.get_berexedges(all_edge_pos)
-			# bex_all = bex.berexresult_to_edgelist(all_vp)
+			over_exp, under_exp = toolcolor.get_over_under_exp_genes(normalized_df, thr=thr)
+			over_exp_genes_list.append(over_exp)
+			under_exp_genes_list.append(under_exp)
 
-			_2col_list[i] = toolhub.run(TS_data,gene_names, _options, start_t, end_t)
+			_adj = toolgenie3.run_GENIE3(TS_data, gene_names=gene_names,start_point = start_t ,end_point = end_t, ntrees=ntree, threshold=threshold)
+			_2col_list.append(toolrepack.adj2twocol(_adj))
 			
 			if _2col_list[i][0:4] == 'None':
 				i = i+1
@@ -276,44 +226,41 @@ def run(file_io_list, _options):
 				
 				list_nodes = []
 				for ii in range(1, len(tcol)):
+					if(len(tcol[ii])==0):
+						continue
 					source_target_dic = {}
 					temp_row = tcol[ii].split('\t')
 					source_target_dic['source'] = temp_row[0]
 					source_target_dic['target'] = temp_row[1]
 					list_nodes.append(source_target_dic)
-				print "list_nodes", list_nodes
-				v_p_list[i] = bex.get_berexedges(list_nodes)
-				print "valid_pairs", v_p_list[i]
-				bex_to_edgelist_list[i] = bex.berexresult_to_edgelist(v_p_list[i])
-				print "bex_to_edgelist", bex_to_edgelist_list[i]
-
-
+				v_p_list.append(bex.get_berexedges(list_nodes))
+				bex_to_edgelist_list.append(bex.berexresult_to_edgelist(v_p_list[i]))
 				
 			except:
 				i = i + 1
 				continue
-							#calculate position value
+			#calculate position value
 			_line = _2col_list[i].split('\n')
 			all_node = []
 			for eachnode in _line[0].strip().split(';'):
 				all_node.append(eachnode)
 			adj = pd.DataFrame(0,index=all_node,columns=all_node)
 			for eachline in _line[1:]:
+				if(len(eachline)==0):
+					continue
 				#e1 is source,  e2 is target
 				e1, e2 = eachline.strip().split('\t')
 				adj[e2][e1] = 1
-			print "adj : ", adj
 			adj_list.append(adj)
 
 			i = i + 1 #
-		print "adj_list : ",adj_list
 		position_list = toolarrange.arrange_node_position(adj_list)
 
-		for i in range(0, 10):
+		for i in range(0, len(_2col_list)):
 			if _2col_list[i] is None:
 				continue
 			
-			_jsons[i] = tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list, graph_count)
+			_jsons.append(tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list, graph_count, totalwidth, totalheight))
 		#end - type : 'available'
 		
 	elif period_info['type'] == 'selective':
@@ -326,19 +273,6 @@ def run(file_io_list, _options):
 		#graphs are more than one
 		if(len(start_point)>1):
 			graph_count = 2
-
-		# all_edge_pos = []
-		# #all edges list can be made possible
-		# for node_in in df.columns:
-		# 	for node_s in df.columns:
-		# 		if(node_in == node_s):
-		# 			continue
-		# 		edge_one = {}
-		# 		edge_one['source'] = node_in
-		# 		edge_one['target'] = node_s
-		# 		all_edge_pos.append(edge_one)
-		# all_vp = bex.get_berexedges(all_edge_pos)
-		# bex_all = bex.berexresult_to_edgelist(all_vp)
 
 		adj_list = []
 		for i in range(0, len(start_point_list)):
@@ -364,10 +298,13 @@ def run(file_io_list, _options):
 			for gene in gene_names:
 				normalized_df[gene] = (normalized_df[gene]-normalized_df[gene].mean())/(normalized_df[gene].std())
 			thr = 0.05		
-			over_exp_genes_list[i] , under_exp_genes_list[i] = toolcolor.get_over_under_exp_genes(normalized_df, thr=thr)
-			
-			_2col_list[i] = toolhub.run(TS_data,gene_names, _options, start_point, end_point)
-			
+			over_exp , under_exp = toolcolor.get_over_under_exp_genes(normalized_df, thr=thr)
+			over_exp_genes_list.append(over_exp)
+			under_exp_genes_list.append(under_exp)
+			_adj = toolgenie3.run_GENIE3(TS_data, gene_names=gene_names,start_point = start_point ,end_point = end_point, ntrees=ntree, threshold=threshold)
+			_2col_list.append(toolrepack.adj2twocol(_adj))
+
+
 			if _2col_list[i] is None:
 				continue
 			try:
@@ -375,16 +312,15 @@ def run(file_io_list, _options):
 				
 				list_nodes = []
 				for ii in range(1, len(tcol)):
+					if(len(tcol[ii])==0):
+						continue
 					source_target_dic = {}
 					temp_row = tcol[ii].split('\t')
 					source_target_dic['source'] = temp_row[0]
 					source_target_dic['target'] = temp_row[1]
 					list_nodes.append(source_target_dic)
-				print "list_nodes", list_nodes
-				v_p_list[i] = bex.get_berexedges(list_nodes)
-				print "valid_pairs", v_p_list[i]
-				bex_to_edgelist_list[i] = bex.berexresult_to_edgelist(v_p_list[i])
-				print "bex_to_edgelist", bex_to_edgelist_list[i]
+				v_p_list.append(bex.get_berexedges(list_nodes))
+				bex_to_edgelist_list.append(bex.berexresult_to_edgelist(v_p_list[i]))
 			
 			except:
 				continue
@@ -394,25 +330,23 @@ def run(file_io_list, _options):
 				all_node.append(eachnode)
 			adj = pd.DataFrame(0,index=all_node,columns=all_node)
 			for eachline in _line[1:]:
+				if(len(eachline)==0):
+					continue
 				#e1 is source,  e2 is target
 				e1, e2 = eachline.strip().split('\t')
 				adj[e2][e1] = 1
-			print "adj : ", adj
 			adj_list.append(adj)
 		position_list = toolarrange.arrange_node_position(adj_list)
-		for i in range(0, 10):
+		for i in range(0, len(_2col_list)):
 			if _2col_list[i] is None:
 				continue
 			try:
-				_jsons[i] = tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list, graph_count)
+				_jsons.append(tsv2json_n2(_2col_list[i], bex_to_edgelist_list[i], v_p_list[i], over_exp_genes_list[i], under_exp_genes_list[i], bex_all, all_vp, position_list, graph_count, totalwidth, totalheight))
 			except:
 				print "error detection"
 				continue
 
 	return [_jsons, 0]
-
-#	print "selective is right?", period_info['selective_form']
-
 
 
 

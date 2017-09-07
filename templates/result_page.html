@@ -1,14 +1,97 @@
 {% extends "__init__.html" %}
 {% block content %}
-
 <script language="javascript">
-
 $(function() {
  $("#content").tabs();
 });
 </script>
 
-<script type="text/javascript">
+<img src="/static/logo.png" style="height: 10%">
+	<!-- for panzoom -->
+	<link href="/static/cytoscape.js-panzoom.css" rel="stylesheet" type="text/css" />
+	<link href="/static/font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
+	<script type='text/javascript' src="{{ url_for('static', filename='cytoscape.min.js') }}"></script>
+	<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='cy.css') }}">
+	<!-- dagre try  -->
+	<script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
+    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script>
+	<script src="/static/cytoscape-panzoom.js"></script>
+
+<!-- main body -->
+<div class="main-div" id="main-body" style="overflow-x: hidden;width:79%;height: 90%;float: left;border: 1px;">
+<!-- <div id = "graph-wrapper" style="width:100%;height:100%;"> -->
+
+<script language="javascript">
+var index = 0;
+var period = 0;
+</script>
+{% for graph in graphdata %}
+	<script language="javascript">
+		period = period + 1;
+	</script>
+	{% if graph %}
+	<div class="block-inbody">
+			<div class="upper-side">
+				<script language="javascript">
+					document.write("Period"+period);
+				</script>
+				<a class="jpg-eg" download="period.jpg"><H3>Download as JPG</H3></a>
+				<div id="graph-info" class="graph-info-div">{{ graph }}</div>
+				</div>
+				<script language="javascript">				
+					$('.jpg-eg')[index].setAttribute("download","period"+period+".jpg");
+				</script>
+			<div id="cy" class="cy-div"></div>
+	</div>
+	<script language="javascript">
+		index = index + 1;
+	</script>
+	{% endif %}
+{% endfor %}
+<!-- <script type='text/javascript' src="{{ url_for('static', filename='cy_test.js') }}" ></script> -->
+
+<!-- </div> -->
+</div>
+<!-- main body end -->
+<!-- side bar -->
+<div style='display: inline;float: left;width: 20%; height:90%;border:1px solid gray;'>
+
+	<div id="content">
+            <ul>
+               <li style="font-size: 14px;">
+                  <a href="#NodeEdgeInfo">Node/Edge Info</a>
+               </li>
+               <li style="font-size: 14px;">
+                  <a href="#help">About</a>
+               </li>
+            </ul>
+		<div id="NodeEdgeInfo" class="tab" style="height: 100%">
+			<img src="/static/colormeaning.png" style="width: 100%;padding-bottom: 30px;border-bottom:1px;">
+
+			<div style='display: inline;float: left; width: 100%; border:4px;margin-top: 20px;'>	
+			<br>
+			<br>
+			<div id="cy-barP" class = "cy-bar-div" style="font-weight: bold;"></div>	
+			<div id="cy-barS" class = "cy-bar-div"></div>
+			<div id="cy-barT" class = "cy-bar-div"></div>
+			<div id="cy-barI" class = "cy-bar-div"></div>
+			<div id="cy-barD" class = "cy-bar-div"></div></div>
+
+		</div>
+	</div>
+</div>
+<!-- side bar end -->
+<br>
+<!-- <h3 onClick="wholedownload()">Combining whole image</h3>
+<a id="wholedown" onClick="change();" download="wholeimage.jpg"><H3>Download whole image as JPG</H3></a>
+ -->
+
+<!-- <canvas id="canvas" class="total-canvas" style="position: absolute;display: none;"></canvas>
+
+<script language="javascript">
+$(function() {
+	console.log($('.cy-div').length);
+	});
 function wholedownload(){
 console.log('function called');
 var img1 = document.getElementById('jpg-eg');
@@ -45,243 +128,159 @@ var wholedown = document.getElementById('wholedown');
 wholedown.href = jpegUrl;
 }
 </script>
-
-<img src="/static/logo.png" height="75">
-	
-
-	<!-- for panzoom -->
-	<link href="/static/cytoscape.js-panzoom.css" rel="stylesheet" type="text/css" />
-	<link href="/static/font-awesome-4.0.3/css/font-awesome.css" rel="stylesheet" type="text/css" />
-
-	<script type='text/javascript' src="{{ url_for('static', filename='cytoscape.min.js') }}"></script>
-	<link rel="stylesheet" type="text/css" charset="UTF-8" href="{{ url_for('static', filename='cy.css') }}">
-
-	<!-- dagre try  -->
-
-	<script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
-    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script>
-	<script src="/static/cytoscape-panzoom.js"></script>
-
-
-
-<!-- <div style="background-color: #A0A0A0; width: : 3450px;"><H1>Layout</H1></div> -->
-<!-- main body -->
-<div class="main-div" id="main-body" style="overflow:auto; width:79%;float: left;border: 1px;">
-<div style="width: 300%;">
-	
-		
-	
-
-<!-- Period 1,2 -->
-	{% if graphdata2 %}
-	<!-- more than 1 graph data -->
-	{% if graphdata %}
-	<!-- <div style='display: inline;float: left;border:1px solid gray;'>	 -->
-	<div style='background-color: #ecf0f1;display: inline;float: left;width:16%;border:1px solid gray;'>
-			<H2>Period 1</H2>	
-			<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
-			<div id="cy" class="cy-div">
-			</div>
-	</div>
-	<!-- </div> -->
-	{% endif %}
-
-	<!-- <div style='display: inline;float: left;border:1px solid gray;'>	 -->
-	<div style='background-color: #ecf0f1;display: inline;float: left;width:16%; border:1px solid gray;'>
-		
-			<H2>Period 2</H2>
-			<a id="jpg-eg2" download="period2.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info2" class="graph-info-div">{{ graphdata2 }}</div>
-			<div id="cy2" class="cy-div">
-			</div>
-		
-		
-	</div>	
-	<!-- </div> -->
-
-
-	{% else %}
-	<!-- graphdata only -->
-	{% if graphdata %}
-	<!-- <div style='display: inline;float: left;margin-left: 250px;width: 500px;border:1px solid gray;'>	 -->
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 35%;border:1px ;'>
-			
-			<div id="graph-info" class="graph-info-div">{{ graphdata }}</div>
-				<a id="jpg-eg" download="period1.jpg"><H3>Download as JPG</H3></a>
-			<div id="cy" class="cy-div">
-			</div>
-	</div>
-	<!-- </div> -->
-
-	{% else %}
-	Cytoscape will be placed here.
-	Please upload file
-	{% endif %}
-
-
-	{% endif %}
-<!-- Period 3 -->
-	{% if graphdata3 %}
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-		
-			<H2>Period 3</H2>
-			<a id="jpg-eg3" download="period3.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info3" class="graph-info-div">{{ graphdata3 }}</div>
-			<div id="cy3" class="cy-div">
-			</div>
-		
-		
-	</div>	
-	</div>
-	{% endif %}
-<!-- Period 4 -->
-	{% if graphdata4 %}
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-		
-			<H2>Period 4</H2>
-			<a id="jpg4-eg" download="period4.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info4" class="graph-info-div">{{ graphdata4 }}</div>
-			<div id="cy4" class="cy-div">
-			</div>
-		
-		
-	</div>
-	</div>
-	{% endif %}
-<!-- Period 5 -->
-	{% if graphdata5 %}
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-		
-			<H2>Period 5</H2>
-			<a id="jpg-eg5" download="period5.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info5" class="graph-info-div">{{ graphdata5 }}</div>
-			<div id="cy5" class="cy-div">
-			</div>
-		
-		
-	</div>
-	</div>
-	{% endif %}
-<!-- Period 6 -->
-	{% if graphdata6 %}
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-		
-			<H2>Period 6</H2>
-			<a id="jpg-eg6" download="period6.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info6" class="graph-info-div">{{ graphdata6 }}</div>
-			<div id="cy6" class="cy-div">
-			</div>
-		
-		
-	</div>
-	</div>
-	{% endif %}
-<!-- Period 7 -->
-	{% if graphdata7 %}
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-		
-			<H2>Period 7</H2>
-			<a id="jpg-eg7" download="period7.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info7" class="graph-info-div">{{ graphdata7 }}</div>
-			<div id="cy7" class="cy-div">
-			</div>
-		
-		
-	</div>
-	</div>
-	{% endif %}
-<!-- Period 8 -->
-	{% if graphdata8 %}
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-		
-			<H2>Period 8</H2>
-			<a id="jpg-eg8" download="period8.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info8" class="graph-info-div">{{ graphdata8 }}</div>
-			<div id="cy8" class="cy-div">
-			</div>
-	
-		
-	</div>
-	</div>
-	{% endif %}
-<!-- Period 9 -->
-	{% if graphdata9 %}	
-	<div style='display: inline;float: left;border:1px solid gray;'>	
-	<div style='background-color: #ecf0f1;display: inline;float: left;width: 500px'>
-	
-			<H2>Period 9</H2>
-			<a id="jpg-eg9" download="period9.jpg"><H3>Download as JPG</H3></a>
-			<div id="graph-info9" class="graph-info-div">{{ graphdata9 }}</div>
-			<div id="cy9" class="cy-div">
-			</div>
-	
-		
-	</div>
-	</div>
-	{% endif %}
-	
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test.js') }}" ></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test2.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test3.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test4.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test5.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test6.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test7.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test8.js') }}"></script>
-	<script type='text/javascript' src="{{ url_for('static', filename='cy_test9.js') }}"></script>
-
-
-</div>
-</div>
-<!-- main body end -->
-
-
-<!-- side bar -->
-
-<div style='display: inline;float: left;width: 20%; height:675px;border:1px solid gray;'>
-
-	<div id="content">
-            <ul>
-               <li style="font-size: 14px;">
-                  <a href="#NodeEdgeInfo">Node/Edge Info</a>
-               </li>
-               <li style="font-size: 14px;">
-                  <a href="#help">About</a>
-               </li>
-            </ul>
-<div id="NodeEdgeInfo" class="tab" style="height: 100%">
-<img src="/static/colormeaning.png" style="width: 100%;padding-bottom: 30px;border-bottom:1px;">
-
-	<div style='display: inline;float: left; width: 100%; border:4px;margin-top: 20px;'>
-	</br>
-	</br>
-	<div id="cy-barP" class = "cy-bar-div" style="font-weight: bold;"></div>	
-	<div id="cy-barS" class = "cy-bar-div"></div>
-	<div id="cy-barT" class = "cy-bar-div"></div>
-	<div id="cy-barI" class = "cy-bar-div"></div>
-	<div id="cy-barD" class = "cy-bar-div"></div></div>
-
-</div>
-	</div>
-	
-	
-
-</div>
-<!-- side bar end -->
-</br>
-<!-- <h3 onClick="wholedownload()">Combining whole image</h3>
-<a id="wholedown" onClick="change();" download="wholeimage.jpg"><H3>Download whole image as JPG</H3></a>
  -->
 
-<!-- <canvas id="canvas" class="total-canvas" style="position: absolute;visibility: hidden;"></canvas>
- -->{% endblock %}
+
+<script language="javascript">
+$(function() {
+
+var graphcount = $('.graph-info-div').length;
+
+if(graphcount==1){
+	$('.block-inbody')[0].setAttribute("style","width:90%;float:left;");
+}
+});
+</script>
+
+<script language="javascript">
+var j = 0;
+</script>
+
+{% for graph in graphdata %}
+<script language="javascript">
+$(function(){
+    console.log($('.graph-info-div').length)
+    console.log('cy_test.js has been called')
+    graph_data = $('.graph-info-div')[j].innerHTML.trim()
+    var cy = window.cy = cytoscape({
+        container: $('.cy-div')[j],
+        wheelSensitivity: 0.1,
+boxSelectionEnabled: false,
+        avoidOverlap: true,
+        avoidOverlapPadding: 10,
+selectable: true,
+ userPanningEnabled: false,
+zoomingEnabled: true,
+fit: true,
+        elements: [
+        {
+            group: 'node',
+            selectable: true
+        }
+        ],
+        // layout: {
+        //     name : 'dagre'    
+        // },
+
+        style: [
+            {
+                selector: 'node',
+                style: {
+                    'content': 'data(id)',
+                    'text-valign': 'center',
+                    'background-opacity': 0.5,
+                    'width' : 52,
+                    'height' : 52,
+                    'border-width': 1,
+                    'border-color': 'black'
+
+                }
+            },
+
+            {
+                selector: 'edge',
+                style: {
+                    'width': 2,
+                    'target-arrow-shape': 'triangle',
+                    'line-color': '#7F7C7C',
+                    'target-arrow-color': '#c0c0c0',
+                    'curve-style': 'bezier'
+                }
+            },
+
+            {
+                selector: ':selected',
+                style: {
+        'opacity': 1
+                }
+            }
+
+            
+
+        ],
+
+        elements: JSON.parse(graph_data)
+    });
+
+// download
+
+// slect node color
+for(var i=0;i<cy.$('node').length; i++){
+    cy.$('node')[i].css("background-color", cy.$('node')[i].data('col'));
+    // cy.$('node')[i].css("x", cy.$('node')[i].data('x')+'%');
+    // cy.$('node')[i].css("y", cy.$('node')[i].data('y')+'%');
+    // xp = str()+'%';
+    // yp = str(cy.$('node')[i].data('y'))+'%';
+    cy.$('node')[i].renderedPosition("x", cy.$('node')[i].data('x'));
+    cy.$('node')[i].renderedPosition("y", cy.$('node')[i].data('y'));
+}
+var jpg64 = cy.jpg();
+$('.jpg-eg')[j].setAttribute('href', jpg64);
+
+cy.on('select','node', function(event){
+    console.log('node position');
+    console.log(cy.$(':selected').position('x'));
+    console.log(cy.$(':selected').position('y'));
+     
+});
+cy.on('select','edge', function(event){
+    console.log('edge select');
+    console.log(cy.$(':selected').data());
+    
+    // str = "In Period " + cy.$(':selected').data('period');
+    // $("#cy-barP").html(str);
+
+    if(typeof cy.$(':selected').data('dbsource') !== typeof undefined){
+    $("#cy-barS").css("visibility", 'visible');
+    $("#cy-barT").css("visibility", 'visible');
+    $("#cy-barI").css("visibility", 'visible');
+    $("#cy-barD").css("visibility", 'visible');
+
+    
+    str = "Source: " + cy.$(':selected').data('source');
+    $("#cy-barS").html(str);
+    
+    str = "Target: " +  cy.$(':selected').data('target');
+    $("#cy-barT").html(str);
+        
+    str = "Edge Type: Inference + Prior Knowledge(" + cy.$(':selected').data('dbsource');
+    str = str + ")"
+    $("#cy-barD").html(str);
+    }
+    else{
+    str = "Source: " + cy.$(':selected').data('source');
+    $("#cy-barS").html(str);
+    
+    str = "Target: " +  cy.$(':selected').data('target');
+    $("#cy-barT").html(str);
+
+    str = "Edge Type: " + "Inference";
+    $("#cy-barD").html(str);
+
+     $("#cy-barI").css("visibility", 'hidden');   
+     
+    }
+
+    });
+    cy.panzoom({
+    });
+j = j+1;
+});
+</script>
+{% endfor %}
+
+
+ {% endblock %}
 
 
 
